@@ -18,6 +18,7 @@ typedef enum {
 } TokenType;
 
 #define MAX_TOKEN_SIZE (100) //一个token最长为100个字符
+#define LINE_BUF_SIZE (1024) //读入的行的最大空间
 
 typedef struct {
     TokenType type;//类型
@@ -25,7 +26,8 @@ typedef struct {
     char str[MAX_TOKEN_SIZE];//存放token
 } Token;
 
-void ana_token(char *line);//将要解析的字符串放入
+void set_line(char *line);//将要解析的字符串放入
 void get_token(Token *token);//获得token
-
+//int isspace(char c);
+//int isdigit(char c);
 #endif //#ifndef TOKEN_H

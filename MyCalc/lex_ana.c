@@ -105,7 +105,7 @@ void set_line(char *line)//初始化要分析的字符串
     st_line = line;
     st_line_pos = 0;
 }
-
+/*测试代码
 void parse_line(char *buf)
 {
     Token token;
@@ -134,4 +134,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
-
+*/

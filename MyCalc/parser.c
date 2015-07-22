@@ -1,35 +1,25 @@
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include "token.h"
 
-
-
-#define LINE_BUF_SIZE (1024)
-
-
-
+//提前查看到的token
 static Token st_look_ahead_token;
-
+//如果提前查看到的token存在的话
 static int st_look_ahead_token_exists;
 
 
 
-static void
-
-my_get_token(Token *token)
-
+static void my_get_token(Token *token)
 {
-
+    //获取token
+    //notice：可能存在提前查看的token
     if (st_look_ahead_token_exists) {
-
+    //如果存在提前查看的token，则使用它
         *token = st_look_ahead_token;
-
+    //此时已经没有提前查看的token
         st_look_ahead_token_exists = 0;
-
     } else {
-
+    //调用lex_ana.c中的词法分析器，获取新的token
         get_token(token);
 
     }
@@ -38,12 +28,10 @@ my_get_token(Token *token)
 
 
 
-static void
-
-unget_token(Token *token)
-
+static void unget_token(Token *token)
 {
-
+    //将当前token标记为提前查看的token
+    //也可以理解为，向后退一步
     st_look_ahead_token = *token;
 
     st_look_ahead_token_exists = 1;
@@ -56,28 +44,28 @@ double parse_expression(void);
 
 
 
-static double
-
-parse_primary_expression()
-
+static double parse_primary_expression()
 {
-
+//获取数字，这是优先级别最高的（乘除运算也得有数字才行啊！！！）
     Token token;
 
     double value = 0.0;
 
+    //标记是否为负数
     int minus_flag = 0;
 
 
 
-    my_get_token(&token);
-
-    if (token.kind == SUB_OPERATOR_TOKEN) {
-
+    my_get_token(&token);//获取token
+    if (token.type == ERR_TOKEN) {
+        printf("语法错误！");
+    }
+    if (token.type == SUB_OP_TOKEN) {
+    //'-'符号
         minus_flag = 1;
 
     } else {
-
+    //否则退一步
         unget_token(&token);
 
     }
@@ -86,18 +74,18 @@ parse_primary_expression()
 
     my_get_token(&token);
 
-    if (token.kind == NUMBER_TOKEN) {
-
+    if (token.type == NUM_TOKEN) {
+        //如果获取到数字，赋值
         value = token.value;
 
-    } else if (token.kind == LEFT_PAREN_TOKEN) {
-
+    } else if (token.type == LEFT_PAREN_TOKEN) {
+        //当遇到括号时，优先级改变，必须优先运行括号内的运算
         value = parse_expression();
 
         my_get_token(&token);
 
-        if (token.kind != RIGHT_PAREN_TOKEN) {
-
+        if (token.type != RIGHT_PAREN_TOKEN) {
+        //err
             fprintf(stderr, "missing ')' error.\n");
 
             exit(1);
@@ -105,13 +93,14 @@ parse_primary_expression()
         }
 
     } else {
-
+        //如果不是数字，将其标记为提前查看token(退一步)
         unget_token(&token);
-
+        //然后，报错，因为该出现数字的地方没出现
+        printf("语法错误\n");
     }
 
     if (minus_flag) {
-
+    //负数
         value = -value;
 
     }
@@ -122,12 +111,9 @@ parse_primary_expression()
 
 
 
-static double
-
-parse_term()
-
+static double parse_term()
 {
-
+//乘除运算，优先级第二
     double v1;
 
     double v2;
@@ -135,30 +121,32 @@ parse_term()
     Token token;
 
 
-
+    //获取数字
     v1 = parse_primary_expression();
 
     for (;;) {
 
         my_get_token(&token);
 
-        if (token.kind != MUL_OPERATOR_TOKEN
+        if (token.type == ERR_TOKEN) {
+            printf("语法错误！");
+        }
 
-            && token.kind != DIV_OPERATOR_TOKEN) {
-
+        if (token.type != MUL_OP_TOKEN&& token.type != DIV_OP_TOKEN) {
+        //如果不出现乘与除，退一步
             unget_token(&token);
-
+        //跳出
             break;
 
         }
 
         v2 = parse_primary_expression();
-
-        if (token.kind == MUL_OPERATOR_TOKEN) {
+        //计算
+        if (token.type == MUL_OP_TOKEN) {
 
             v1 *= v2;
 
-        } else if (token.kind == DIV_OPERATOR_TOKEN) {
+        } else if (token.type == DIV_OP_TOKEN) {
 
             v1 /= v2;
 
@@ -172,12 +160,9 @@ parse_term()
 
 
 
-double
-
-parse_expression()
-
+double parse_expression()
 {
-
+//加减运算，优先级第三
     double v1;
 
     double v2;
@@ -194,10 +179,14 @@ parse_expression()
 
         my_get_token(&token);
 
-        if (token.kind != ADD_OPERATOR_TOKEN 
+        if (token.type == ERR_TOKEN) {
+            printf("语法错误！");
+        }
 
-            && token.kind != SUB_OPERATOR_TOKEN) {
+        if (token.type != ADD_OP_TOKEN 
 
+            && token.type != SUB_OP_TOKEN) {
+        //如果没有加减，跳出，退一步
             unget_token(&token);
 
             break;
@@ -205,18 +194,14 @@ parse_expression()
         }
 
         v2 = parse_term();
-
-        if (token.kind == ADD_OPERATOR_TOKEN) {
+        //计算
+        if (token.type == ADD_OP_TOKEN) {
 
             v1 += v2;
 
-        } else if (token.kind == SUB_OPERATOR_TOKEN) {
+        } else if (token.type == SUB_OP_TOKEN) {
 
             v1 -= v2;
-
-        } else {
-
-            unget_token(&token);
 
         }
 
@@ -228,10 +213,7 @@ parse_expression()
 
 
 
-double
-
-parse_line(void)
-
+double parse_line(void)
 {
 
     double value;
@@ -239,7 +221,7 @@ parse_line(void)
 
 
     st_look_ahead_token_exists = 0;
-
+    //调用递归下降分析法的最外层
     value = parse_expression();
 
 
@@ -250,9 +232,7 @@ parse_line(void)
 
 
 
-int
-
-main(int argc, char **argv)
+int main(int argc, char **argv)
 
 {
 

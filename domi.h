@@ -1,57 +1,151 @@
 #ifndef DOMI_H
 #define DOMI_H
 
-struct DM_Interpreter_tag {
-    //åœ¨è§£é‡Šå™¨ç”Ÿæˆæ—¶åˆ†é…å†…å­˜ï¼Œè§£é‡Šå™¨ä¸ç”¨æ—¶å›æ”¶
+#include<stdio.h>
+#include "DM_DEV.h"
+#include "DM.h"
+
+/*
+ *±àÒëÊ±´íÎóµÄ´íÎóÀàĞÍ
+ * */
+typedef enum {
+    //½âÎö´íÎó
+    PARSE_ERR = 1,
+    //
+    CHARACTER_INVALID_ERR,
+    //ÖØ¸´¶¨Òåº¯Êı
+    FUNCTION_MULTIPLE_DEFINE_ERR,
+    //
+    COMPILE_ERROR_COUNT_PLUS_1
+
+
+} CompileError;
+
+
+/*
+ *ÔËĞĞÊ±´íÎóµÄ´íÎóÀàĞÍ
+ * */
+typedef enum {
+    //±äÁ¿Î´·¢ÏÖ
+    VARIABLE_NOT_FOUND_ERR = 1,
+    //º¯ÊıÎ´·¢ÏÖ
+    FUNCTION_NOT_FOUND_ERR,
+    //º¯Êıµ÷ÓÃÊ±£¬´«ÈëµÄ²ÎÊı¹ı¶à
+    ARGUMENT_TOO_MANY_ERR,
+    //º¯Êıµ÷ÓÃÊ±£¬´«ÈëµÄ²ÎÊı¹ıÉÙ
+    ARGUMENT_TOO_FEW_ERR,
+    //²»ÊÇboolean
+    NOT_BOOLEAN_TYPE_ERR,
+    //¼õ·¨´íÎó
+    MINUS_OPERAND_TYPE_ERR,
+    //
+    BAD_OPERAND_TYPE_ERR,
+
+    NOT_BOOLEAN_OPERATOR_ERR,
+    //ÎÄ¼ş´ò¿ª
+    FOPEN_ARGUMENT_TYPE_ERR,
+
+    FCLOSE_ARGUMENT_TYPE_ERR,
+
+    FGETS_ARGUMENT_TYPE_ERR,
+
+    FPUTS_ARGUMENT_TYPE_ERR,
+
+    NOT_NULL_OPERATOR_ERR,
+    //³ıÒÔ0µÄ´íÎó
+    DIVISION_BY_ZERO_ERR,
+    //ÔÚÉùÃ÷ÎªÈ«¾Ö±äÁ¿µÄÊ±ºò£¬±äÁ¿Î´·¢ÏÖ
+    GLOBAL_VARIABLE_NOT_FOUND_ERR,
+    //
+    GLOBAL_STATEMENT_IN_TOPLEVEL_ERR,
+
+    BAD_OPERATOR_FOR_STRING_ERR,
+
+    RUNTIME_ERROR_COUNT_PLUS_1
+
+
+} RuntimeError;
+
+
+/*
+ *ÓÃÀ´±ê¼Ç´íÎóĞÅÏ¢ÖĞ¿É±ä²¿·ÖµÄÀàĞÍ
+ * */
+typedef enum {
+    //
+    INT_MESSAGE_ARGUMENT = 1,
+
+    DOUBLE_MESSAGE_ARGUMENT,
+
+    STRING_MESSAGE_ARGUMENT,
+
+    CHARACTER_MESSAGE_ARGUMENT,
+
+    POINTER_MESSAGE_ARGUMENT,
+
+    MESSAGE_ARGUMENT_END
+
+
+} MessageArgumentType;
+
+
+
+typedef struct {
+
+    char *format;
+
+} MessageFormat;
+
+typedef struct DM_Interpreter_tag {
+    //ÔÚ½âÊÍÆ÷Éú³ÉÊ±·ÖÅäÄÚ´æ£¬½âÊÍÆ÷²»ÓÃÊ±»ØÊÕ
     MEM_Storage         interpreter_storage;
-    //è¿è¡Œæ—¶å†…å­˜ï¼Œ
+    //ÔËĞĞÊ±ÄÚ´æ£¬
     MEM_Storage         execute_storage;
-    //å…¨å±€å˜é‡çš„å¤´ç»“ç‚¹ï¼Œé€šè¿‡å®ƒå¯ä»¥æ„å»ºé“¾è¡¨ï¼Œä»è€Œæ‰¾åˆ°å…¶ä»–çš„å…¨å±€å˜é‡
+    //È«¾Ö±äÁ¿µÄÍ·½áµã£¬Í¨¹ıËü¿ÉÒÔ¹¹½¨Á´±í£¬´Ó¶øÕÒµ½ÆäËûµÄÈ«¾Ö±äÁ¿
     Variable            *variable;
-    //è®°å½•ç¼–å†™çš„å‡½æ•°ï¼Œä½œä¸ºå¤´ç»“ç‚¹ï¼Œå¯ä»¥æ‰¾åˆ°å…¶ä»–å‡½æ•°
+    //¼ÇÂ¼±àĞ´µÄº¯Êı£¬×÷ÎªÍ·½áµã£¬¿ÉÒÔÕÒµ½ÆäËûº¯Êı
     FunctionDefinition  *function_list;
-    //ä¿å­˜å…·ä½“çš„è¯­å¥
+    //±£´æ¾ßÌåµÄÓï¾ä
     StatementList       *statement_list;
-    //ç¼–è¯‘æ—¶å½“å‰çš„è¡Œå·ï¼Œå‡ºé”™æ—¶å¯ä»¥æç¤ºè¡Œå·
+
     int                 current_line_number;
-};
+} DM_Interpreter;
 
 typedef struct Variable_tag {
-    //å­˜å‚¨å…¨å±€å˜é‡çš„ç»“ç‚¹ï¼Œå¯ä»¥æ„æˆé“¾è¡¨
-    //å˜é‡å
+    //´æ´¢È«¾Ö±äÁ¿µÄ½áµã£¬¿ÉÒÔ¹¹³ÉÁ´±í
+    //±äÁ¿Ãû
     char        *name;
-    //å˜é‡å€¼
+    //±äÁ¿Öµ
     DM_Value   value;
-    //ä¸‹ä¸€ä¸ªï¼Œç”¨äºä¾¿åˆ©åˆ—è¡¨
+    //ÏÂÒ»¸ö£¬ÓÃÓÚ±ãÀûÁĞ±í
     struct Variable_tag *next;
 
 } Variable;
 
 typedef enum {
-    //ç”¨æˆ·å£°æ˜çš„å‡½æ•°
+    //ÓÃ»§ÉùÃ÷µÄº¯Êı
     DOMI_FUNCTION_DEFINITION = 1,
-    //è‡ªå¸¦å‡½æ•°
+    //×Ô´øº¯Êı
     NATIVE_FUNCTION_DEFINITION
 
 } FunctionDefinitionType;
 
 typedef struct FunctionDefinition_tag {
-    //è®°å½•å‡½æ•°çš„ç»“ç‚¹ï¼Œå¯ä»¥è¿æˆé“¾è¡¨
-    //å‡½æ•°å
+    //¼ÇÂ¼º¯ÊıµÄ½áµã£¬¿ÉÒÔÁ¬³ÉÁ´±í
+    //º¯ÊıÃû
     char                *name;
-    //å‡½æ•°ç±»å‹
+    //º¯ÊıÀàĞÍ
     FunctionDefinitionType      type;
 
     union {
-        //å¯¹åº”è‡ªå®šä¹‰å‡½æ•°
+        //¶ÔÓ¦×Ô¶¨Òåº¯Êı
         struct {
-            //å‚æ•°çš„å®šä¹‰
+            //²ÎÊıµÄ¶¨Òå
             ParameterList       *parameter;
-            //å‡½æ•°ä¸»ä½“
+            //º¯ÊıÖ÷Ìå
             Block               *block;
 
         } domi_f;
-        //å¯¹åº”è‡ªå¸¦å‡½æ•°
+        //¶ÔÓ¦×Ô´øº¯Êı
         struct {
 
             DM_NativeFunctionProc      *proc;
@@ -59,24 +153,24 @@ typedef struct FunctionDefinition_tag {
         } native_f;
 
     } u;
-    //ä¸‹ä¸€ä¸ª
+    //ÏÂÒ»¸ö
     struct FunctionDefinition_tag       *next;
 
 } FunctionDefinition;
 
 typedef struct ParameterList_tag {
-    //å‡½æ•°å‚æ•°ï¼Œç»„åˆæˆçš„é“¾è¡¨
-    //å˜é‡å
+    //º¯Êı²ÎÊı£¬×éºÏ³ÉµÄÁ´±í
+    //±äÁ¿Ãû
     char        *name;
-    //é“¾è¡¨æ‰€ç”¨çš„æŒ‡é’ˆ
+    //Á´±íËùÓÃµÄÖ¸Õë
     struct ParameterList_tag *next;
 
 } ParameterList;
 
 typedef struct {
-    //å‡½æ•°ä¸»ä½“
-    //è¯­å¥çš„é“¾è¡¨ï¼ŒæŒ‡å‘å¤´ç»“ç‚¹
-    //è§£æå™¨ä¼šä»å¤´å¼€å§‹æ‰§è¡Œ
+    //º¯ÊıÖ÷Ìå
+    //Óï¾äµÄÁ´±í£¬Ö¸ÏòÍ·½áµã
+    //½âÎöÆ÷»á´ÓÍ·¿ªÊ¼Ö´ĞĞ
     StatementList       *statement_list;
 
 } Block;
@@ -84,12 +178,324 @@ typedef struct {
 typedef struct Statement_tag Statement;
 
 typedef struct StatementList_tag {
-    //è¯­å¥çš„é“¾è¡¨ç»“æ„
+    //Óï¾äµÄÁ´±í½á¹¹
     Statement   *statement;
-    //ä¸‹ä¸€ä¸ª
+    //ÏÂÒ»¸ö
     struct StatementList_tag    *next;
 
 } StatementList;
+/*
+statement(Óï¾ä)µÄÀàĞÍµÄÃ¶¾Ù
+*/
+typedef enum {
+    //±í´ïÊ½ÉùÃ÷
+    EXPRESSION_STATEMENT = 1,
+    //È«¾Ö±äÁ¿ÉùÃ÷µÄÓï¾ä
+    GLOBAL_STATEMENT,
+    //ifÓï¾ä
+    IF_STATEMENT,
+    //whileÓï¾ä
+    WHILE_STATEMENT,
+    //forÓï¾ä
+    FOR_STATEMENT,
+    //returnÓï¾ä
+    RETURN_STATEMENT,
+    //break
+    BREAK_STATEMENT,
+    //continue
+    CONTINUE_STATEMENT,
+    //++
+    STATEMENT_TYPE_COUNT_PLUS_1
+
+} StatementType;
+
+/*
+Óï¾ä
+*/
+
+struct Statement_tag {
+    //ÀàĞÍ
+    StatementType       type;
+
+    int                 line_number;
+
+    union {
+        //±í´ïÊ½Óï¾ä
+        Expression      *expression_s;
+        //globalÓï¾ä
+        GlobalStatement global_s;
+        //ifÓï¾ä
+        IfStatement     if_s;
+        //whileÓï¾ä
+        WhileStatement  while_s;
+        //forÓï¾ä
+        ForStatement    for_s;
+        //returnÓï¾ä
+        ReturnStatement return_s;
+
+    } u;
+
+};
+/*
+whileÓï¾ä
+*/
+
+typedef struct {
+    //Ìõ¼ş±í´ïÊ½
+    Expression  *condition;
+    //¿ÉÖ´ĞĞ¿é
+    Block       *block;
+
+} WhileStatement;
+/*
+ifÓï¾ä
+*/
+typedef struct {
+    //Ìõ¼ş±í´ïÊ½
+    Expression  *condition;
+    //thenÀïµÄ¿ÉÖ´ĞĞ¿é
+    Block       *then_block;
+    //
+    Elsif       *elsif_list;
+    //elseÀïµÄ¿ÉÖ´ĞĞ¿é
+    Block       *else_block;
+
+} IfStatement;
+/*
+ElsifÁ´±í½á¹¹
+*/
+typedef struct Elsif_tag {
+    //elseifÀïµÄÌõ¼ş±í´ïÊ½
+    Expression  *condition;
+    //¿ÉÖ´ĞĞ¿é
+    Block       *block;
+    //ÏÂÒ»¸ö
+    struct Elsif_tag    *next;
+
+} Elsif;
+
+/*
+forÓï¾ä
+*/
+typedef struct {
+    //³õÊ¼»¯Óï¾ä
+    Expression  *init;
+    //ÅĞ¶ÏÓï¾ä
+    Expression  *condition;
+    //ºóĞøÓï¾ä£¬±ÈÈçi++
+    Expression  *post;
+    //´úÂë¿é
+    Block       *block;
+
+} ForStatement;
+/*
+returnÓï¾ä
+*/
+typedef struct {
+    //retrunºóÃæ¸ú×ÅµÄ±í´ïÊ½
+    Expression *return_value;
+
+} ReturnStatement;
+/*
+globalÓï¾ä
+*/
+typedef struct {
+    //±»ÉùÃ÷µÄ±äÁ¿µÄÁĞ±í
+    IdentifierList      *identifier_list;
+
+} GlobalStatement;
+
+/*
+±äÁ¿
+*/
+typedef struct IdentifierList_tag {
+    //±äÁ¿µÄÃû×Ö
+    char        *name;
+    //Á´±íÖĞµÄÏÂÒ»¸ö
+    struct IdentifierList_tag   *next;
+
+} IdentifierList;
+
+/*
+  expressionµÄÀàĞÍÃ¶¾Ù
+*/
+typedef enum {
+    //boolean
+    BOOLEAN_EXPRESSION = 1,
+    //int
+    INT_EXPRESSION,
+    //double
+    DOUBLE_EXPRESSION,
+    //string
+    STRING_EXPRESSION,
+    //±äÁ¿
+    IDENTIFIER_EXPRESSION,
+    //¸³Öµ±í´ïÊ½
+    ASSIGN_EXPRESSION,
+    //´Ó+µ½||£¬ÕâĞ©±í´ïÊ½µÄÖµ¶¼Ê¹ÓÃBinaryExpressionÀàĞÍ´æ´¢
+    //+
+    ADD_EXPRESSION,
+    //-
+    SUB_EXPRESSION,
+    //*
+    MUL_EXPRESSION,
+    //  /
+    DIV_EXPRESSION,
+    //ÇóÓà±í´ïÊ½
+    MOD_EXPRESSION,
+    // ==
+    EQ_EXPRESSION,
+    // £¡=
+    NE_EXPRESSION,
+    // >
+    GT_EXPRESSION,
+    // >=
+    GE_EXPRESSION,
+    // <
+    LT_EXPRESSION,
+    // <=
+    LE_EXPRESSION,
+    // &&
+    LOGICAL_AND_EXPRESSION,
+    // ||
+    LOGICAL_OR_EXPRESSION,
+    //È¡¸ºÊı
+    MINUS_EXPRESSION,
+    //º¯Êıµ÷ÓÃ±í´ïÊ½
+    FUNCTION_CALL_EXPRESSION,
+    // null
+    NULL_EXPRESSION,
+
+    EXPRESSION_TYPE_COUNT_PLUS_1
+
+} ExpressionType;
+/*
+°Ñ±í´ïÊ½¹éÀà£¬°üÀ¨
+1.ÊıÑ§±í´ïÊ½
+2.±È½Ï±í´ïÊ½
+3.Âß¼­ÔËËã±í´ïÊ½
+*/
+#define dkc_is_math_operator(operator) \
+  ((operator) == ADD_EXPRESSION || (operator) == SUB_EXPRESSION\
+   || (operator) == MUL_EXPRESSION || (operator) == DIV_EXPRESSION\
+   || (operator) == MOD_EXPRESSION)
+
+#define dkc_is_compare_operator(operator) \
+  ((operator) == EQ_EXPRESSION || (operator) == NE_EXPRESSION\
+   || (operator) == GT_EXPRESSION || (operator) == GE_EXPRESSION\
+   || (operator) == LT_EXPRESSION || (operator) == LE_EXPRESSION)
+
+#define dkc_is_logical_operator(operator) \
+  ((operator) == LOGICAL_AND_EXPRESSION || (operator) == LOGICAL_OR_EXPRESSION)
+
+/*
+expressionµÄ¶¨Òå£¬±í´ïÊ½
+*/
+struct Expression_tag {
+    //expressionµÄÀàĞÍ
+    ExpressionType type;
+    //¶ÔÓ¦µÄĞĞÊı
+    int line_number;
+    //¶ÔÓ¦ÀàĞÍµÄ´æ´¢ÖµµÄ¼¯ºÏ
+    union {
+        //boolean
+        DM_Boolean             boolean_value;
+        //int
+        int                     int_value;
+        //double
+        double                  double_value;
+        //string
+        char                    *string_value;
+        //±äÁ¿
+        char                    *identifier;
+        //¸³Öµ±í´ïÊ½
+        AssignExpression        assign_expression;
+        //´æ´¢¶şÔªÔËËã·ûºÅµÎ
+        BinaryExpression        binary_expression;
+        //¸ººÅ
+        Expression              *minus_expression;
+        //º¯Êıµ÷ÓÃ±í´ïÊ½
+        FunctionCallExpression  function_call_expression;
+
+    } u;
+
+};
+/*
+´æ´¢¶şÔªÔËËã·ûµÄÊı¾İ½á¹¹
+*/
+typedef struct {
+
+    Expression  *left;
+
+    Expression  *right;
+
+} BinaryExpression;
+/*
+¸³ÖµÔËËã·û
+*/
+typedef struct {
+    //±äÁ¿
+    char        *variable;
+    //=ÓÒ±ßµÄ±í´ïÊ½
+    Expression  *operand;
+
+} AssignExpression;
+/*
+º¯Êıµ÷ÓÃµÄ±í´ïÊ½
+*/
+typedef struct {
+    //º¯ÊıÃû³Æ
+    char                *identifier;
+    //²ÎÊıÁ´±í
+    ArgumentList        *argument;
+
+} FunctionCallExpression;
+/*
+º¯Êıµ÷ÓÃÊ±µÄ²ÎÊıÁ´±í
+*/
+typedef struct ArgumentList_tag {
+    //£¨ÔÚµ÷ÓÃº¯ÊıÊ±£¬²ÎÊı¿ÉÒÔÊÇ±í´ïÊ½£¡£©²ÎÊı
+    Expression *expression;
+    //ÏÂÒ»¸ö
+    struct ArgumentList_tag *next;
+
+} ArgumentList;
+
+/*
+±äÁ¿
+*/
+/*
+È«¾Ö±äÁ¿
+*/
+typedef struct GlobalVariableRef_tag {
+    Variable    *variable;
+    struct GlobalVariableRef_tag *next;
+} GlobalVariableRef;
+
+/*
+±¾µØ±äÁ¿£¬Ò²½Ğ¾Ö²¿±äÁ¿
+*/
+typedef struct {
+    Variable    *variable;
+    GlobalVariableRef   *global_variable;
+} LocalEnvironment;
+
+/*
+StringÀàĞÍµÄ¶¨Òå
+*/
+struct DM_String_tag{
+  int ref_count;
+  char *string;
+  DM_Boolean is_literal;
+};
+
+/*
+string³Ø
+*/
+typedef struct {
+    CRB_String  *strings;
+} StringPool;
+
 
 
 #endif //#ifndef DOMI_H

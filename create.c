@@ -279,7 +279,10 @@ static Expression convert_value_to_expression(DM_Value *v)
 */
 Expression *dm_create_binary_expression(ExpressionType operator, Expression *left, Expression *right)
 {
-
+  /*
+    如果左右两边是数值的话，要提前算出结果
+    不是的话，简单滴赋值就行啦
+   */
     if ((left->type == INT_EXPRESSION || left->type == DOUBLE_EXPRESSION)
         && (right->type == INT_EXPRESSION || right->type == DOUBLE_EXPRESSION)) {
 
@@ -295,6 +298,9 @@ Expression *dm_create_binary_expression(ExpressionType operator, Expression *lef
 
         /* Overwriting left hand expression. */
 
+        /*
+          再将DM_Value转换为expression
+         */
         *left = convert_value_to_expression(&v);
 
 
@@ -304,8 +310,8 @@ Expression *dm_create_binary_expression(ExpressionType operator, Expression *lef
     } else {
 
         Expression *exp;
-
-        exp = crb_alloc_expression(operator);
+        //获取一个空的expresson
+        exp = dm_alloc_expression(operator);
 
         exp->u.binary_expression.left = left;
 
@@ -324,6 +330,9 @@ Expression *dm_create_binary_expression(ExpressionType operator, Expression *lef
 Expression *dm_create_minus_expression(Expression *operand)
 {
 
+  /*
+    如果-号右边是数值，就调用eval.c中的函数，提前将它转换为DM_Value,然后再转换回expression
+   */
     if (operand->type == INT_EXPRESSION
 
         || operand->type == DOUBLE_EXPRESSION) {

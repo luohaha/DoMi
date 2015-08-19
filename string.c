@@ -73,6 +73,7 @@ char *dm_create_identifier(char *str)
 
     new_str = dm_malloc(strlen(str) + 1);
 
+
     strcpy(new_str, str);
 
     return new_str;

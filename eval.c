@@ -430,7 +430,7 @@ chain_string(CRB_Interpreter *inter, CRB_String *left, CRB_String *right)
  *所有的二元表达式的获取value的总函数
  *
  * */
-DM_Value dm_eval_binary_expression(CRB_Interpreter *inter, LocalEnvironment *env,
+DM_Value dm_eval_binary_expression(DM_Interpreter *inter, LocalEnvironment *env,
                            ExpressionType operator,
                            Expression *left, Expression *right)
 {
@@ -442,8 +442,8 @@ DM_Value dm_eval_binary_expression(CRB_Interpreter *inter, LocalEnvironment *env
     left_val = eval_expression(inter, env, left);
     right_val = eval_expression(inter, env, right);
 
-    if (left_val.type == CRB_INT_VALUE
-        && right_val.type == CRB_INT_VALUE) {
+    if (left_val.type == DM_INT_VALUE
+        && right_val.type == DM_INT_VALUE) {
         //当左右的表达式都是int时,调用计算
         eval_binary_int(inter, operator,
                         left_val.u.int_value, right_val.u.int_value,
@@ -452,20 +452,20 @@ DM_Value dm_eval_binary_expression(CRB_Interpreter *inter, LocalEnvironment *env
     /*
      *当其中有一个为double时，进行doubel间的运算
      * */
-    else if (left_val.type == CRB_DOUBLE_VALUE
-               && right_val.type == CRB_DOUBLE_VALUE) {
+    else if (left_val.type == DM_DOUBLE_VALUE
+               && right_val.type == DM_DOUBLE_VALUE) {
 
         eval_binary_double(inter, operator,
                            left_val.u.double_value, right_val.u.double_value,
                            &result, left->line_number);
-    } else if (left_val.type == CRB_INT_VALUE
-               && right_val.type == CRB_DOUBLE_VALUE) {
+    } else if (left_val.type == DM_INT_VALUE
+               && right_val.type == DM_DOUBLE_VALUE) {
         left_val.u.double_value = left_val.u.int_value;
         eval_binary_double(inter, operator,
                            left_val.u.double_value, right_val.u.double_value,
                            &result, left->line_number);
-    } else if (left_val.type == CRB_DOUBLE_VALUE
-               && right_val.type == CRB_INT_VALUE) {
+    } else if (left_val.type == DM_DOUBLE_VALUE
+               && right_val.type == DM_INT_VALUE) {
         right_val.u.double_value = right_val.u.int_value;
         eval_binary_double(inter, operator,
                            left_val.u.double_value, right_val.u.double_value,

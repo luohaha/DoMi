@@ -4,15 +4,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+  内存分配时的错误模式
+  失败后退出
+  失败后返回
+*/
 typedef enum {
     MEM_FAIL_AND_EXIT,
     MEM_FAIL_AND_RETURN
 } MEM_FailMode;
 
+/*
+  定义MEM/中的struct
+*/
 typedef struct MEM_Controller_tag *MEM_Controller;
 typedef void (*MEM_ErrorHandler)(MEM_Controller, char *, int, char *);
 typedef struct MEM_Storage_tag *MEM_Storage;
 
+/*
+  引入外部的default_controller
+*/
 extern MEM_Controller mem_default_controller;
 
 #ifdef MEM_CONTROLLER

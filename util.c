@@ -59,7 +59,7 @@ FunctionDefinition *dm_search_function(char *name)
     return pos;
 }
 
-void *crb_malloc(size_t size)
+void *dm_malloc(size_t size)
 {
     void *p;
     CRB_Interpreter *inter;
@@ -71,7 +71,7 @@ void *crb_malloc(size_t size)
 }
 
 void *
-crb_execute_malloc(CRB_Interpreter *inter, size_t size)
+dm_execute_malloc(DM_Interpreter *inter, size_t size)
 {
     void *p;
 
@@ -96,7 +96,7 @@ Variable *dm_search_local_variable(LocalEnvironment *env, char *identifier)
     if (pos == NULL) {
         return NULL;
     } else {
-        return pos;
+        retur pos;
     }
 }
 
@@ -146,8 +146,10 @@ void DM_add_global_variable(DM_Interpreter *inter, char *identifier,
     new_variable->value = *value;
 }
 
-char *
-crb_get_operator_string(ExpressionType type)
+/*
+  根据expression的类型来返回字符
+*/
+char *dm_get_operator_string(ExpressionType type)
 {
     char        *str;
 

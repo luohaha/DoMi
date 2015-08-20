@@ -28,13 +28,13 @@ typedef struct MemoryPage_tag MemoryPage;
 typedef MemoryPage *MemoryPageList;
 
 struct MemoryPage_tag {
-  //总共拥有的内存单元的数量
+  /*总共拥有的内存单元的数量*/
     int                 cell_num;
-  //已经使用的内存单元的数量
+  /*已经使用的内存单元的数量*/
     int                 use_cell_num;
-  //下一个memorypage
+  /*下一个memorypage*/
     MemoryPageList      next;
-  //
+  
     Cell                cell[1];
 };
 
@@ -92,11 +92,11 @@ void* MEM_storage_malloc_func(MEM_Controller controller,
     if (storage->page_list != NULL
         && (storage->page_list->use_cell_num + cell_num
             < storage->page_list->cell_num)) {
-      //将可以使用的开始地址赋值给p
+      /*将可以使用的开始地址赋值给p*/
         p = &(storage->page_list->cell[storage->page_list->use_cell_num]);
         storage->page_list->use_cell_num += cell_num;
     } else {
-      //如果没有当前的memorypage，或者当前的memorypage的cell不够用
+      /*如果没有当前的memorypage，或者当前的memorypage的cell不够用*/
         int     alloc_cell_num;
 
         alloc_cell_num = larger(cell_num, storage->current_page_size);
@@ -104,6 +104,7 @@ void* MEM_storage_malloc_func(MEM_Controller controller,
         new_page = MEM_malloc_func(controller, filename, line,
                                    sizeof(MemoryPage)
                                    + CELL_SIZE * (alloc_cell_num - 1));
+        /*新的memorypage插入page链表的头部*/
         new_page->next = storage->page_list;
         new_page->cell_num = alloc_cell_num;
         storage->page_list = new_page;
@@ -119,10 +120,14 @@ void MEM_dispose_storage_func(MEM_Controller controller, MEM_Storage storage)
 {
     MemoryPage  *temp;
 
+    /*
+      将storage中的page链表的头部循环回收
+     */
     while (storage->page_list) {
         temp = storage->page_list->next;
         MEM_free_func(controller, storage->page_list);
         storage->page_list = temp;
     }
+    /*最后再回收整个storage*/
     MEM_free_func(controller, storage);
 }

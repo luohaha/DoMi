@@ -6,6 +6,9 @@
 static void default_error_handler(MEM_Controller controller,
                                   char *filename, int line, char *msg);
 
+/*
+  创建的新的controller的默认值
+*/
 static struct MEM_Controller_tag st_default_controller = {
     NULL,/* stderr */
     default_error_handler,
@@ -62,6 +65,9 @@ static void error_handler(MEM_Controller controller, char *filename, int line, c
     }
 }
 
+/*
+  创建新的controller
+*/
 MEM_Controller MEM_create_controller(void)
 {
     MEM_Controller      p;
@@ -76,12 +82,13 @@ MEM_Controller MEM_create_controller(void)
 /*
   如果DEBUG被设置
 */
-#ifdef DEBUG
+#ifdef DEBUG 
 static void chain_block(MEM_Controller controller, Header *new_header)
 {
     if (controller->block_header) {
         controller->block_header->s.prev = new_header;
     }
+    /*将新的header插入链表的头部*/
     new_header->s.prev = NULL;
     new_header->s.next = controller->block_header;
     controller->block_header = new_header;
@@ -99,11 +106,16 @@ static void rechain_block(MEM_Controller controller, Header *header)
     }
 }
 
+/*
+  将header从链表中解除
+*/
 static void unchain_block(MEM_Controller controller, Header *header)
 {
     if (header->s.prev) {
+      /*如果不是头结点*/
         header->s.prev->s.next = header->s.next;
     } else {
+      /*是头结点*/
         controller->block_header = header->s.next;
     }
     if (header->s.next) {
@@ -112,7 +124,7 @@ static void unchain_block(MEM_Controller controller, Header *header)
 }
 
 /*
-  
+  给header赋值
 */
 void set_header(Header *header, int size, char *filename, int line)
 {
@@ -127,6 +139,9 @@ void set_header(Header *header, int size, char *filename, int line)
     memset(header->s.mark, MARK, (char*)&header[1] - (char*)header->s.mark);
 }
 
+/*
+  给tail赋值
+*/
 void set_tail(void *ptr, int alloc_size)
 {
     char *tail;
@@ -146,8 +161,7 @@ void check_mark_sub(unsigned char *mark, int size)
     }
 }
 
-void
-check_mark(Header *header)
+void check_mark(Header *header)
 {
     unsigned char        *tail;
     check_mark_sub(header->s.mark, (char*)&header[1] - (char*)header->s.mark);
@@ -163,13 +177,13 @@ check_mark(Header *header)
 void* MEM_malloc_func(MEM_Controller controller, char *filename, int line,
                 size_t size)
 {
-  //返回的新建的地址的指针
+  /*返回的新建的地址的指针*/
     void        *ptr;
-    //分配的大小，size_t等于unsigned int
+    /*分配的大小，size_t等于unsigned int*/
     size_t      alloc_size;
 
     /*
-      在dubug模式下，要加上header和标记
+      在dubug模式下，要加上header和tail,tail的大小为MARK_SIZE
      */
 #ifdef DEBUG
     alloc_size = size + sizeof(Header) + MARK_SIZE;
@@ -195,17 +209,22 @@ void* MEM_malloc_func(MEM_Controller controller, char *filename, int line,
     return ptr;
 }
 
-void*
-MEM_realloc_func(MEM_Controller controller, char *filename, int line,
+/*
+  给地址在ptr的地址，从新分配size大小的内存
+*/
+void* MEM_realloc_func(MEM_Controller controller, char *filename, int line,
                  void *ptr, size_t size)
 {
+  /*新的地址*/
     void        *new_ptr;
     size_t      alloc_size;
+    /*真实的地址，从header开始（debug下）*/
     void        *real_ptr;
 #ifdef DEBUG
     Header      old_header;
     int         old_size;
 
+    /*实际要分配的大小*/
     alloc_size = size + sizeof(Header) + MARK_SIZE;
     if (ptr != NULL) {
         real_ptr = (char*)ptr - sizeof(Header);
@@ -222,6 +241,9 @@ MEM_realloc_func(MEM_Controller controller, char *filename, int line,
     real_ptr = ptr;
 #endif
 
+    /*
+      重新分配
+     */
     new_ptr = realloc(real_ptr, alloc_size);
     if (new_ptr == NULL) {
         if (ptr == NULL) {
@@ -252,20 +274,24 @@ MEM_realloc_func(MEM_Controller controller, char *filename, int line,
     return(new_ptr);
 }
 
-char *
-MEM_strdup_func(MEM_Controller controller, char *filename, int line,
+/*
+  复制string
+*/
+char *MEM_strdup_func(MEM_Controller controller, char *filename, int line,
                 char *str)
 {
     char        *ptr;
     int         size;
     size_t      alloc_size;
 
+    /*获取需要的string的大小*/
     size = strlen(str) + 1;
 #ifdef DEBUG
     alloc_size = size + sizeof(Header) + MARK_SIZE;
 #else
     alloc_size = size;
 #endif
+    /*分配*/
     ptr = malloc(alloc_size);
     if (ptr == NULL) {
         error_handler(controller, filename, line, "strdup");
@@ -283,8 +309,10 @@ MEM_strdup_func(MEM_Controller controller, char *filename, int line,
     return(ptr);
 }
 
-void
-MEM_free_func(MEM_Controller controller, void *ptr)
+/*
+  内存回收
+*/
+void MEM_free_func(MEM_Controller controller, void *ptr)
 {
     void        *real_ptr;
 #ifdef DEBUG
@@ -306,20 +334,26 @@ MEM_free_func(MEM_Controller controller, void *ptr)
     free(real_ptr);
 }
 
-void
-MEM_set_error_handler(MEM_Controller controller, MEM_ErrorHandler handler)
+/*
+  设置controller
+*/
+void MEM_set_error_handler(MEM_Controller controller, MEM_ErrorHandler handler)
 {
     controller->error_handler = handler;
 }
 
-void
-MEM_set_fail_mode(MEM_Controller controller, MEM_FailMode mode)
+/*
+  设置错误后的处理模式
+*/
+void MEM_set_fail_mode(MEM_Controller controller, MEM_FailMode mode)
 {
     controller->fail_mode = mode;
 }
 
-void
-MEM_dump_blocks_func(MEM_Controller controller, FILE *fp)
+/*
+  在debug模式下，将所有的内存分配信息打印出来，方便调试
+*/
+void MEM_dump_blocks_func(MEM_Controller controller, FILE *fp)
 {
 #ifdef DEBUG
     Header *pos;
@@ -336,8 +370,10 @@ MEM_dump_blocks_func(MEM_Controller controller, FILE *fp)
 #endif /* DEBUG */
 }
 
-void
-MEM_check_block_func(MEM_Controller controller, char *filename, int line,
+/*
+  
+*/
+void MEM_check_block_func(MEM_Controller controller, char *filename, int line,
                      void *p)
 {
 #ifdef DEBUG

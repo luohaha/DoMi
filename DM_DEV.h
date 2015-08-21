@@ -88,15 +88,15 @@ typedef struct {
 /*
 自带函数
 */
-typedef CRB_Value CRB_NativeFunctionProc(CRB_Interpreter *interpreter, int arg_count, CRB_Value *args);
+typedef DM_Value DM_NativeFunctionProc(DM_Interpreter *interpreter, int arg_count, DM_Value *args);
 
 
 
-void CRB_add_native_function(CRB_Interpreter *interpreter,
+void DM_add_native_function(DM_Interpreter *interpreter,
 
-                             char *name, CRB_NativeFunctionProc *proc);
+                             char *name, DM_NativeFunctionProc *proc);
 
-void CRB_add_global_variable(CRB_Interpreter *inter,
+void DM_add_global_variable(CRB_Interpreter *inter,
 
                              char *identifier, CRB_Value *value);
 

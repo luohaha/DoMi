@@ -11,13 +11,13 @@
   fgets：使用文件的标识符，来获取数据
   fputs：写入数据
 */
-static void add_native_functions(CRB_Interpreter *inter)
+static void add_native_functions(DM_Interpreter *inter)
 {
-    CRB_add_native_function(inter, "print", crb_nv_print_proc);
-    CRB_add_native_function(inter, "fopen", crb_nv_fopen_proc);
-    CRB_add_native_function(inter, "fclose", crb_nv_fclose_proc);
-    CRB_add_native_function(inter, "fgets", crb_nv_fgets_proc);
-    CRB_add_native_function(inter, "fputs", crb_nv_fputs_proc);
+    DM_add_native_function(inter, "print", dm_nv_print_proc);
+    DM_add_native_function(inter, "fopen", dm_nv_fopen_proc);
+    DM_add_native_function(inter, "fclose", dm_nv_fclose_proc);
+    DM_add_native_function(inter, "fgets", dm_nv_fgets_proc);
+    DM_add_native_function(inter, "fputs", dm_nv_fputs_proc);
 }
 
 /*
@@ -44,12 +44,15 @@ DM_Interpreter *DM_create_interpreter(void)
     return interpreter;
 }
 
+/*
+  设置解释器
+*/
 void DM_compile(CRB_Interpreter *interpreter, FILE *fp)
 {
     extern int yyparse(void);
     extern FILE *yyin;
 
-    crb_set_current_interpreter(interpreter);
+    dm_set_current_interpreter(interpreter);
 
     yyin = fp;
     if (yyparse()) {
@@ -57,49 +60,67 @@ void DM_compile(CRB_Interpreter *interpreter, FILE *fp)
         fprintf(stderr, "Error ! Error ! Error !\n");
         exit(1);
     }
-    crb_reset_string_literal_buffer();
+    dm_reset_string_literal_buffer();
 }
 
-void DM_interpret(CRB_Interpreter *interpreter)
+void DM_interpret(DM_Interpreter *interpreter)
 {
+  /*
+    创建远行时的内存
+   */
     interpreter->execute_storage = MEM_open_storage(0);
-    crb_add_std_fp(interpreter);
-    crb_execute_statement_list(interpreter, NULL, interpreter->statement_list);
+    dm_add_std_fp(interpreter);
+    dm_execute_statement_list(interpreter, NULL, interpreter->statement_list);
 }
 
-static void
-release_global_strings(CRB_Interpreter *interpreter) {
+/*
+  释放全局变量中的string类型
+*/
+static void release_global_strings(CRB_Interpreter *interpreter) {
     while (interpreter->variable) {
         Variable *temp = interpreter->variable;
         interpreter->variable = temp->next;
         if (temp->value.type == CRB_STRING_VALUE) {
-            crb_release_string(temp->value.u.string_value);
+          //判断是否是string类型
+            dm_release_string(temp->value.u.string_value);
         }
     }
 }
 
-void
-CRB_dispose_interpreter(CRB_Interpreter *interpreter)
+/*
+  回收解释器的内存
+*/
+void DM_dispose_interpreter(CRB_Interpreter *interpreter)
 {
     release_global_strings(interpreter);
 
+    /*回收运行内存*/
     if (interpreter->execute_storage) {
         MEM_dispose_storage(interpreter->execute_storage);
     }
 
+    /*
+      回收解释器的内存
+     */
     MEM_dispose_storage(interpreter->interpreter_storage);
 }
 
-void
-CRB_add_native_function(CRB_Interpreter *interpreter,
-                        char *name, CRB_NativeFunctionProc *proc)
+/*
+  在解释器的函数链表中，加入mative函数
+*/
+void DM_add_native_function(DM_Interpreter *interpreter,
+                        char *name, DM_NativeFunctionProc *proc)
 {
     FunctionDefinition *fd;
 
-    fd = crb_malloc(sizeof(FunctionDefinition));
+    /*新建函数类型*/
+    fd = dm_malloc(sizeof(FunctionDefinition));
     fd->name = name;
     fd->type = NATIVE_FUNCTION_DEFINITION;
     fd->u.native_f.proc = proc;
+    /*
+      插入头结点
+     */
     fd->next = interpreter->function_list;
 
     interpreter->function_list = fd;

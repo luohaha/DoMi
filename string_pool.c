@@ -65,9 +65,9 @@ void dm_release_string(DM_String *str)
 /*
 生成非字符常量的string
 */
-DM_String *dm_create_domi_string(CRB_Interpreter *inter, char *str)
+DM_String *dm_create_domi_string(DM_Interpreter *inter, char *str)
 {
-    CRB_String *ret = alloc_crb_string(inter, str, CRB_FALSE);
+    DM_String *ret = alloc_dm_string(inter, str, CRB_FALSE);
     ret->ref_count = 1;
 
     return ret;

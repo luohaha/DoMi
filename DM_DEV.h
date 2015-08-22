@@ -70,7 +70,7 @@ typedef struct {
 
     union {
 
-        CRB_Boolean     boolean_value;
+        DM_Boolean     boolean_value;
 
         int             int_value;
 
@@ -96,9 +96,9 @@ void DM_add_native_function(DM_Interpreter *interpreter,
 
                              char *name, DM_NativeFunctionProc *proc);
 
-void DM_add_global_variable(CRB_Interpreter *inter,
+void DM_add_global_variable(DM_Interpreter *inter,
 
-                             char *identifier, CRB_Value *value);
+                             char *identifier, DM_Value *value);
 
 
 

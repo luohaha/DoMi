@@ -1,0 +1,1844 @@
+语法
+
+    0 $accept: translation_unit $end
+
+    1 translation_unit: definition_or_statement
+    2                 | translation_unit definition_or_statement
+
+    3 definition_or_statement: function_definition
+    4                        | statement
+
+    5 function_definition: FUNCTION IDENTIFIER LP parameter_list RP block
+    6                    | FUNCTION IDENTIFIER LP RP block
+
+    7 parameter_list: IDENTIFIER
+    8               | parameter_list COMMA IDENTIFIER
+
+    9 argument_list: expression
+   10              | argument_list COMMA expression
+
+   11 statement_list: statement
+   12               | statement_list statement
+
+   13 expression: logical_or_expression
+   14           | IDENTIFIER ASSIGN expression
+
+   15 logical_or_expression: logical_and_expression
+   16                      | logical_or_expression LOGICAL_OR logical_and_expression
+
+   17 logical_and_expression: equality_expression
+   18                       | logical_and_expression LOGICAL_AND equality_expression
+
+   19 equality_expression: relational_expression
+   20                    | equality_expression EQ relational_expression
+   21                    | equality_expression NE relational_expression
+
+   22 relational_expression: additive_expression
+   23                      | relational_expression GT additive_expression
+   24                      | relational_expression GE additive_expression
+   25                      | relational_expression LT additive_expression
+   26                      | relational_expression LE additive_expression
+
+   27 additive_expression: multiplicative_expression
+   28                    | additive_expression ADD multiplicative_expression
+   29                    | additive_expression SUB multiplicative_expression
+
+   30 multiplicative_expression: unary_expression
+   31                          | multiplicative_expression MUL unary_expression
+   32                          | multiplicative_expression DIV unary_expression
+   33                          | multiplicative_expression MOD unary_expression
+
+   34 unary_expression: primary_expression
+   35                 | SUB unary_expression
+
+   36 primary_expression: IDENTIFIER LP argument_list RP
+   37                   | IDENTIFIER LP RP
+   38                   | LP expression RP
+   39                   | IDENTIFIER
+   40                   | INT_LITERAL
+   41                   | DOUBLE_LITERAL
+   42                   | STRING_LITERAL
+   43                   | TRUE_T
+   44                   | FALSE_T
+   45                   | NULL_T
+
+   46 statement: expression SEMICOLON
+   47          | global_statement
+   48          | if_statement
+   49          | while_statement
+   50          | for_statement
+   51          | return_statement
+   52          | break_statement
+   53          | continue_statement
+
+   54 global_statement: GLOBAL_T identifier_list SEMICOLON
+
+   55 identifier_list: IDENTIFIER
+   56                | identifier_list COMMA IDENTIFIER
+
+   57 if_statement: IF LP expression RP block
+   58             | IF LP expression RP block ELSE block
+   59             | IF LP expression RP block elsif_list
+   60             | IF LP expression RP block elsif_list ELSE block
+
+   61 elsif_list: elsif
+   62           | elsif_list elsif
+
+   63 elsif: ELSIF LP expression RP block
+
+   64 while_statement: WHILE LP expression RP block
+
+   65 for_statement: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block
+
+   66 expression_opt: %empty
+   67               | expression
+
+   68 return_statement: RETURN_T expression_opt SEMICOLON
+
+   69 break_statement: BREAK SEMICOLON
+
+   70 continue_statement: CONTINUE SEMICOLON
+
+   71 block: LC statement_list RC
+   72      | LC RC
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+INT_LITERAL (258) 40
+DOUBLE_LITERAL (259) 41
+STRING_LITERAL (260) 42
+IDENTIFIER (261) 5 6 7 8 14 36 37 39 55 56
+FUNCTION (262) 5 6
+IF (263) 57 58 59 60
+ELSE (264) 58 60
+ELSIF (265) 63
+WHILE (266) 64
+FOR (267) 65
+RETURN_T (268) 68
+BREAK (269) 69
+CONTINUE (270) 70
+NULL_T (271) 45
+LP (272) 5 6 36 37 38 57 58 59 60 63 64 65
+RP (273) 5 6 36 37 38 57 58 59 60 63 64 65
+LC (274) 71 72
+RC (275) 71 72
+SEMICOLON (276) 46 54 65 68 69 70
+COMMA (277) 8 10 56
+ASSIGN (278) 14
+LOGICAL_AND (279) 18
+LOGICAL_OR (280) 16
+EQ (281) 20
+NE (282) 21
+GT (283) 23
+GE (284) 24
+LT (285) 25
+LE (286) 26
+ADD (287) 28
+SUB (288) 29 35
+MUL (289) 31
+DIV (290) 32
+MOD (291) 33
+TRUE_T (292) 43
+FALSE_T (293) 44
+GLOBAL_T (294) 54
+
+
+Nonterminals, with rules where they appear
+
+$accept (40)
+    左： 0
+translation_unit (41)
+    左： 1 2, 右： 0 2
+definition_or_statement (42)
+    左： 3 4, 右： 1 2
+function_definition (43)
+    左： 5 6, 右： 3
+parameter_list (44)
+    左： 7 8, 右： 5 8
+argument_list (45)
+    左： 9 10, 右： 10 36
+statement_list (46)
+    左： 11 12, 右： 12 71
+expression (47)
+    左： 13 14, 右： 9 10 14 38 46 57 58 59 60 63 64 67
+logical_or_expression (48)
+    左： 15 16, 右： 13 16
+logical_and_expression (49)
+    左： 17 18, 右： 15 16 18
+equality_expression (50)
+    左： 19 20 21, 右： 17 18 20 21
+relational_expression (51)
+    左： 22 23 24 25 26, 右： 19 20 21 23 24 25 26
+additive_expression (52)
+    左： 27 28 29, 右： 22 23 24 25 26 28 29
+multiplicative_expression (53)
+    左： 30 31 32 33, 右： 27 28 29 31 32 33
+unary_expression (54)
+    左： 34 35, 右： 30 31 32 33 35
+primary_expression (55)
+    左： 36 37 38 39 40 41 42 43 44 45, 右： 34
+statement (56)
+    左： 46 47 48 49 50 51 52 53, 右： 4 11 12
+global_statement (57)
+    左： 54, 右： 47
+identifier_list (58)
+    左： 55 56, 右： 54 56
+if_statement (59)
+    左： 57 58 59 60, 右： 48
+elsif_list (60)
+    左： 61 62, 右： 59 60 62
+elsif (61)
+    左： 63, 右： 61 62
+while_statement (62)
+    左： 64, 右： 49
+for_statement (63)
+    左： 65, 右： 50
+expression_opt (64)
+    左： 66 67, 右： 65 68
+return_statement (65)
+    左： 68, 右： 51
+break_statement (66)
+    左： 69, 右： 52
+continue_statement (67)
+    左： 70, 右： 53
+block (68)
+    左： 71 72, 右： 5 6 57 58 59 60 63 64 65
+
+
+State 0
+
+    0 $accept: . translation_unit $end
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    FUNCTION        shift, and go to state 5
+    IF              shift, and go to state 6
+    WHILE           shift, and go to state 7
+    FOR             shift, and go to state 8
+    RETURN_T        shift, and go to state 9
+    BREAK           shift, and go to state 10
+    CONTINUE        shift, and go to state 11
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+    GLOBAL_T        shift, and go to state 17
+
+    translation_unit           转到状态 18
+    definition_or_statement    转到状态 19
+    function_definition        转到状态 20
+    expression                 转到状态 21
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    statement                  转到状态 30
+    global_statement           转到状态 31
+    if_statement               转到状态 32
+    while_statement            转到状态 33
+    for_statement              转到状态 34
+    return_statement           转到状态 35
+    break_statement            转到状态 36
+    continue_statement         转到状态 37
+
+
+State 1
+
+   40 primary_expression: INT_LITERAL .
+
+    $default  reduce using rule 40 (primary_expression)
+
+
+State 2
+
+   41 primary_expression: DOUBLE_LITERAL .
+
+    $default  reduce using rule 41 (primary_expression)
+
+
+State 3
+
+   42 primary_expression: STRING_LITERAL .
+
+    $default  reduce using rule 42 (primary_expression)
+
+
+State 4
+
+   14 expression: IDENTIFIER . ASSIGN expression
+   36 primary_expression: IDENTIFIER . LP argument_list RP
+   37                   | IDENTIFIER . LP RP
+   39                   | IDENTIFIER .
+
+    LP      shift, and go to state 38
+    ASSIGN  shift, and go to state 39
+
+    $default  reduce using rule 39 (primary_expression)
+
+
+State 5
+
+    5 function_definition: FUNCTION . IDENTIFIER LP parameter_list RP block
+    6                    | FUNCTION . IDENTIFIER LP RP block
+
+    IDENTIFIER  shift, and go to state 40
+
+
+State 6
+
+   57 if_statement: IF . LP expression RP block
+   58             | IF . LP expression RP block ELSE block
+   59             | IF . LP expression RP block elsif_list
+   60             | IF . LP expression RP block elsif_list ELSE block
+
+    LP  shift, and go to state 41
+
+
+State 7
+
+   64 while_statement: WHILE . LP expression RP block
+
+    LP  shift, and go to state 42
+
+
+State 8
+
+   65 for_statement: FOR . LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block
+
+    LP  shift, and go to state 43
+
+
+State 9
+
+   68 return_statement: RETURN_T . expression_opt SEMICOLON
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    $default  reduce using rule 66 (expression_opt)
+
+    expression                 转到状态 44
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    expression_opt             转到状态 45
+
+
+State 10
+
+   69 break_statement: BREAK . SEMICOLON
+
+    SEMICOLON  shift, and go to state 46
+
+
+State 11
+
+   70 continue_statement: CONTINUE . SEMICOLON
+
+    SEMICOLON  shift, and go to state 47
+
+
+State 12
+
+   45 primary_expression: NULL_T .
+
+    $default  reduce using rule 45 (primary_expression)
+
+
+State 13
+
+   38 primary_expression: LP . expression RP
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    expression                 转到状态 48
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 14
+
+   35 unary_expression: SUB . unary_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    unary_expression    转到状态 50
+    primary_expression  转到状态 29
+
+
+State 15
+
+   43 primary_expression: TRUE_T .
+
+    $default  reduce using rule 43 (primary_expression)
+
+
+State 16
+
+   44 primary_expression: FALSE_T .
+
+    $default  reduce using rule 44 (primary_expression)
+
+
+State 17
+
+   54 global_statement: GLOBAL_T . identifier_list SEMICOLON
+
+    IDENTIFIER  shift, and go to state 51
+
+    identifier_list  转到状态 52
+
+
+State 18
+
+    0 $accept: translation_unit . $end
+    2 translation_unit: translation_unit . definition_or_statement
+
+    $end            shift, and go to state 53
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    FUNCTION        shift, and go to state 5
+    IF              shift, and go to state 6
+    WHILE           shift, and go to state 7
+    FOR             shift, and go to state 8
+    RETURN_T        shift, and go to state 9
+    BREAK           shift, and go to state 10
+    CONTINUE        shift, and go to state 11
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+    GLOBAL_T        shift, and go to state 17
+
+    definition_or_statement    转到状态 54
+    function_definition        转到状态 20
+    expression                 转到状态 21
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    statement                  转到状态 30
+    global_statement           转到状态 31
+    if_statement               转到状态 32
+    while_statement            转到状态 33
+    for_statement              转到状态 34
+    return_statement           转到状态 35
+    break_statement            转到状态 36
+    continue_statement         转到状态 37
+
+
+State 19
+
+    1 translation_unit: definition_or_statement .
+
+    $default  reduce using rule 1 (translation_unit)
+
+
+State 20
+
+    3 definition_or_statement: function_definition .
+
+    $default  reduce using rule 3 (definition_or_statement)
+
+
+State 21
+
+   46 statement: expression . SEMICOLON
+
+    SEMICOLON  shift, and go to state 55
+
+
+State 22
+
+   13 expression: logical_or_expression .
+   16 logical_or_expression: logical_or_expression . LOGICAL_OR logical_and_expression
+
+    LOGICAL_OR  shift, and go to state 56
+
+    $default  reduce using rule 13 (expression)
+
+
+State 23
+
+   15 logical_or_expression: logical_and_expression .
+   18 logical_and_expression: logical_and_expression . LOGICAL_AND equality_expression
+
+    LOGICAL_AND  shift, and go to state 57
+
+    $default  reduce using rule 15 (logical_or_expression)
+
+
+State 24
+
+   17 logical_and_expression: equality_expression .
+   20 equality_expression: equality_expression . EQ relational_expression
+   21                    | equality_expression . NE relational_expression
+
+    EQ  shift, and go to state 58
+    NE  shift, and go to state 59
+
+    $default  reduce using rule 17 (logical_and_expression)
+
+
+State 25
+
+   19 equality_expression: relational_expression .
+   23 relational_expression: relational_expression . GT additive_expression
+   24                      | relational_expression . GE additive_expression
+   25                      | relational_expression . LT additive_expression
+   26                      | relational_expression . LE additive_expression
+
+    GT  shift, and go to state 60
+    GE  shift, and go to state 61
+    LT  shift, and go to state 62
+    LE  shift, and go to state 63
+
+    $default  reduce using rule 19 (equality_expression)
+
+
+State 26
+
+   22 relational_expression: additive_expression .
+   28 additive_expression: additive_expression . ADD multiplicative_expression
+   29                    | additive_expression . SUB multiplicative_expression
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 22 (relational_expression)
+
+
+State 27
+
+   27 additive_expression: multiplicative_expression .
+   31 multiplicative_expression: multiplicative_expression . MUL unary_expression
+   32                          | multiplicative_expression . DIV unary_expression
+   33                          | multiplicative_expression . MOD unary_expression
+
+    MUL  shift, and go to state 66
+    DIV  shift, and go to state 67
+    MOD  shift, and go to state 68
+
+    $default  reduce using rule 27 (additive_expression)
+
+
+State 28
+
+   30 multiplicative_expression: unary_expression .
+
+    $default  reduce using rule 30 (multiplicative_expression)
+
+
+State 29
+
+   34 unary_expression: primary_expression .
+
+    $default  reduce using rule 34 (unary_expression)
+
+
+State 30
+
+    4 definition_or_statement: statement .
+
+    $default  reduce using rule 4 (definition_or_statement)
+
+
+State 31
+
+   47 statement: global_statement .
+
+    $default  reduce using rule 47 (statement)
+
+
+State 32
+
+   48 statement: if_statement .
+
+    $default  reduce using rule 48 (statement)
+
+
+State 33
+
+   49 statement: while_statement .
+
+    $default  reduce using rule 49 (statement)
+
+
+State 34
+
+   50 statement: for_statement .
+
+    $default  reduce using rule 50 (statement)
+
+
+State 35
+
+   51 statement: return_statement .
+
+    $default  reduce using rule 51 (statement)
+
+
+State 36
+
+   52 statement: break_statement .
+
+    $default  reduce using rule 52 (statement)
+
+
+State 37
+
+   53 statement: continue_statement .
+
+    $default  reduce using rule 53 (statement)
+
+
+State 38
+
+   36 primary_expression: IDENTIFIER LP . argument_list RP
+   37                   | IDENTIFIER LP . RP
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    RP              shift, and go to state 69
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    argument_list              转到状态 70
+    expression                 转到状态 71
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 39
+
+   14 expression: IDENTIFIER ASSIGN . expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    expression                 转到状态 72
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 40
+
+    5 function_definition: FUNCTION IDENTIFIER . LP parameter_list RP block
+    6                    | FUNCTION IDENTIFIER . LP RP block
+
+    LP  shift, and go to state 73
+
+
+State 41
+
+   57 if_statement: IF LP . expression RP block
+   58             | IF LP . expression RP block ELSE block
+   59             | IF LP . expression RP block elsif_list
+   60             | IF LP . expression RP block elsif_list ELSE block
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    expression                 转到状态 74
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 42
+
+   64 while_statement: WHILE LP . expression RP block
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    expression                 转到状态 75
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 43
+
+   65 for_statement: FOR LP . expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    $default  reduce using rule 66 (expression_opt)
+
+    expression                 转到状态 44
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    expression_opt             转到状态 76
+
+
+State 44
+
+   67 expression_opt: expression .
+
+    $default  reduce using rule 67 (expression_opt)
+
+
+State 45
+
+   68 return_statement: RETURN_T expression_opt . SEMICOLON
+
+    SEMICOLON  shift, and go to state 77
+
+
+State 46
+
+   69 break_statement: BREAK SEMICOLON .
+
+    $default  reduce using rule 69 (break_statement)
+
+
+State 47
+
+   70 continue_statement: CONTINUE SEMICOLON .
+
+    $default  reduce using rule 70 (continue_statement)
+
+
+State 48
+
+   38 primary_expression: LP expression . RP
+
+    RP  shift, and go to state 78
+
+
+State 49
+
+   36 primary_expression: IDENTIFIER . LP argument_list RP
+   37                   | IDENTIFIER . LP RP
+   39                   | IDENTIFIER .
+
+    LP  shift, and go to state 38
+
+    $default  reduce using rule 39 (primary_expression)
+
+
+State 50
+
+   35 unary_expression: SUB unary_expression .
+
+    $default  reduce using rule 35 (unary_expression)
+
+
+State 51
+
+   55 identifier_list: IDENTIFIER .
+
+    $default  reduce using rule 55 (identifier_list)
+
+
+State 52
+
+   54 global_statement: GLOBAL_T identifier_list . SEMICOLON
+   56 identifier_list: identifier_list . COMMA IDENTIFIER
+
+    SEMICOLON  shift, and go to state 79
+    COMMA      shift, and go to state 80
+
+
+State 53
+
+    0 $accept: translation_unit $end .
+
+    $default  接受
+
+
+State 54
+
+    2 translation_unit: translation_unit definition_or_statement .
+
+    $default  reduce using rule 2 (translation_unit)
+
+
+State 55
+
+   46 statement: expression SEMICOLON .
+
+    $default  reduce using rule 46 (statement)
+
+
+State 56
+
+   16 logical_or_expression: logical_or_expression LOGICAL_OR . logical_and_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    logical_and_expression     转到状态 81
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 57
+
+   18 logical_and_expression: logical_and_expression LOGICAL_AND . equality_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    equality_expression        转到状态 82
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 58
+
+   20 equality_expression: equality_expression EQ . relational_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    relational_expression      转到状态 83
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 59
+
+   21 equality_expression: equality_expression NE . relational_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    relational_expression      转到状态 84
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 60
+
+   23 relational_expression: relational_expression GT . additive_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    additive_expression        转到状态 85
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 61
+
+   24 relational_expression: relational_expression GE . additive_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    additive_expression        转到状态 86
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 62
+
+   25 relational_expression: relational_expression LT . additive_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    additive_expression        转到状态 87
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 63
+
+   26 relational_expression: relational_expression LE . additive_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    additive_expression        转到状态 88
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 64
+
+   28 additive_expression: additive_expression ADD . multiplicative_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    multiplicative_expression  转到状态 89
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 65
+
+   29 additive_expression: additive_expression SUB . multiplicative_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    multiplicative_expression  转到状态 90
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 66
+
+   31 multiplicative_expression: multiplicative_expression MUL . unary_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    unary_expression    转到状态 91
+    primary_expression  转到状态 29
+
+
+State 67
+
+   32 multiplicative_expression: multiplicative_expression DIV . unary_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    unary_expression    转到状态 92
+    primary_expression  转到状态 29
+
+
+State 68
+
+   33 multiplicative_expression: multiplicative_expression MOD . unary_expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 49
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    unary_expression    转到状态 93
+    primary_expression  转到状态 29
+
+
+State 69
+
+   37 primary_expression: IDENTIFIER LP RP .
+
+    $default  reduce using rule 37 (primary_expression)
+
+
+State 70
+
+   10 argument_list: argument_list . COMMA expression
+   36 primary_expression: IDENTIFIER LP argument_list . RP
+
+    RP     shift, and go to state 94
+    COMMA  shift, and go to state 95
+
+
+State 71
+
+    9 argument_list: expression .
+
+    $default  reduce using rule 9 (argument_list)
+
+
+State 72
+
+   14 expression: IDENTIFIER ASSIGN expression .
+
+    $default  reduce using rule 14 (expression)
+
+
+State 73
+
+    5 function_definition: FUNCTION IDENTIFIER LP . parameter_list RP block
+    6                    | FUNCTION IDENTIFIER LP . RP block
+
+    IDENTIFIER  shift, and go to state 96
+    RP          shift, and go to state 97
+
+    parameter_list  转到状态 98
+
+
+State 74
+
+   57 if_statement: IF LP expression . RP block
+   58             | IF LP expression . RP block ELSE block
+   59             | IF LP expression . RP block elsif_list
+   60             | IF LP expression . RP block elsif_list ELSE block
+
+    RP  shift, and go to state 99
+
+
+State 75
+
+   64 while_statement: WHILE LP expression . RP block
+
+    RP  shift, and go to state 100
+
+
+State 76
+
+   65 for_statement: FOR LP expression_opt . SEMICOLON expression_opt SEMICOLON expression_opt RP block
+
+    SEMICOLON  shift, and go to state 101
+
+
+State 77
+
+   68 return_statement: RETURN_T expression_opt SEMICOLON .
+
+    $default  reduce using rule 68 (return_statement)
+
+
+State 78
+
+   38 primary_expression: LP expression RP .
+
+    $default  reduce using rule 38 (primary_expression)
+
+
+State 79
+
+   54 global_statement: GLOBAL_T identifier_list SEMICOLON .
+
+    $default  reduce using rule 54 (global_statement)
+
+
+State 80
+
+   56 identifier_list: identifier_list COMMA . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 102
+
+
+State 81
+
+   16 logical_or_expression: logical_or_expression LOGICAL_OR logical_and_expression .
+   18 logical_and_expression: logical_and_expression . LOGICAL_AND equality_expression
+
+    LOGICAL_AND  shift, and go to state 57
+
+    $default  reduce using rule 16 (logical_or_expression)
+
+
+State 82
+
+   18 logical_and_expression: logical_and_expression LOGICAL_AND equality_expression .
+   20 equality_expression: equality_expression . EQ relational_expression
+   21                    | equality_expression . NE relational_expression
+
+    EQ  shift, and go to state 58
+    NE  shift, and go to state 59
+
+    $default  reduce using rule 18 (logical_and_expression)
+
+
+State 83
+
+   20 equality_expression: equality_expression EQ relational_expression .
+   23 relational_expression: relational_expression . GT additive_expression
+   24                      | relational_expression . GE additive_expression
+   25                      | relational_expression . LT additive_expression
+   26                      | relational_expression . LE additive_expression
+
+    GT  shift, and go to state 60
+    GE  shift, and go to state 61
+    LT  shift, and go to state 62
+    LE  shift, and go to state 63
+
+    $default  reduce using rule 20 (equality_expression)
+
+
+State 84
+
+   21 equality_expression: equality_expression NE relational_expression .
+   23 relational_expression: relational_expression . GT additive_expression
+   24                      | relational_expression . GE additive_expression
+   25                      | relational_expression . LT additive_expression
+   26                      | relational_expression . LE additive_expression
+
+    GT  shift, and go to state 60
+    GE  shift, and go to state 61
+    LT  shift, and go to state 62
+    LE  shift, and go to state 63
+
+    $default  reduce using rule 21 (equality_expression)
+
+
+State 85
+
+   23 relational_expression: relational_expression GT additive_expression .
+   28 additive_expression: additive_expression . ADD multiplicative_expression
+   29                    | additive_expression . SUB multiplicative_expression
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 23 (relational_expression)
+
+
+State 86
+
+   24 relational_expression: relational_expression GE additive_expression .
+   28 additive_expression: additive_expression . ADD multiplicative_expression
+   29                    | additive_expression . SUB multiplicative_expression
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 24 (relational_expression)
+
+
+State 87
+
+   25 relational_expression: relational_expression LT additive_expression .
+   28 additive_expression: additive_expression . ADD multiplicative_expression
+   29                    | additive_expression . SUB multiplicative_expression
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 25 (relational_expression)
+
+
+State 88
+
+   26 relational_expression: relational_expression LE additive_expression .
+   28 additive_expression: additive_expression . ADD multiplicative_expression
+   29                    | additive_expression . SUB multiplicative_expression
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 26 (relational_expression)
+
+
+State 89
+
+   28 additive_expression: additive_expression ADD multiplicative_expression .
+   31 multiplicative_expression: multiplicative_expression . MUL unary_expression
+   32                          | multiplicative_expression . DIV unary_expression
+   33                          | multiplicative_expression . MOD unary_expression
+
+    MUL  shift, and go to state 66
+    DIV  shift, and go to state 67
+    MOD  shift, and go to state 68
+
+    $default  reduce using rule 28 (additive_expression)
+
+
+State 90
+
+   29 additive_expression: additive_expression SUB multiplicative_expression .
+   31 multiplicative_expression: multiplicative_expression . MUL unary_expression
+   32                          | multiplicative_expression . DIV unary_expression
+   33                          | multiplicative_expression . MOD unary_expression
+
+    MUL  shift, and go to state 66
+    DIV  shift, and go to state 67
+    MOD  shift, and go to state 68
+
+    $default  reduce using rule 29 (additive_expression)
+
+
+State 91
+
+   31 multiplicative_expression: multiplicative_expression MUL unary_expression .
+
+    $default  reduce using rule 31 (multiplicative_expression)
+
+
+State 92
+
+   32 multiplicative_expression: multiplicative_expression DIV unary_expression .
+
+    $default  reduce using rule 32 (multiplicative_expression)
+
+
+State 93
+
+   33 multiplicative_expression: multiplicative_expression MOD unary_expression .
+
+    $default  reduce using rule 33 (multiplicative_expression)
+
+
+State 94
+
+   36 primary_expression: IDENTIFIER LP argument_list RP .
+
+    $default  reduce using rule 36 (primary_expression)
+
+
+State 95
+
+   10 argument_list: argument_list COMMA . expression
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    expression                 转到状态 103
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 96
+
+    7 parameter_list: IDENTIFIER .
+
+    $default  reduce using rule 7 (parameter_list)
+
+
+State 97
+
+    6 function_definition: FUNCTION IDENTIFIER LP RP . block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 105
+
+
+State 98
+
+    5 function_definition: FUNCTION IDENTIFIER LP parameter_list . RP block
+    8 parameter_list: parameter_list . COMMA IDENTIFIER
+
+    RP     shift, and go to state 106
+    COMMA  shift, and go to state 107
+
+
+State 99
+
+   57 if_statement: IF LP expression RP . block
+   58             | IF LP expression RP . block ELSE block
+   59             | IF LP expression RP . block elsif_list
+   60             | IF LP expression RP . block elsif_list ELSE block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 108
+
+
+State 100
+
+   64 while_statement: WHILE LP expression RP . block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 109
+
+
+State 101
+
+   65 for_statement: FOR LP expression_opt SEMICOLON . expression_opt SEMICOLON expression_opt RP block
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    $default  reduce using rule 66 (expression_opt)
+
+    expression                 转到状态 44
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    expression_opt             转到状态 110
+
+
+State 102
+
+   56 identifier_list: identifier_list COMMA IDENTIFIER .
+
+    $default  reduce using rule 56 (identifier_list)
+
+
+State 103
+
+   10 argument_list: argument_list COMMA expression .
+
+    $default  reduce using rule 10 (argument_list)
+
+
+State 104
+
+   71 block: LC . statement_list RC
+   72      | LC . RC
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    IF              shift, and go to state 6
+    WHILE           shift, and go to state 7
+    FOR             shift, and go to state 8
+    RETURN_T        shift, and go to state 9
+    BREAK           shift, and go to state 10
+    CONTINUE        shift, and go to state 11
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    RC              shift, and go to state 111
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+    GLOBAL_T        shift, and go to state 17
+
+    statement_list             转到状态 112
+    expression                 转到状态 21
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    statement                  转到状态 113
+    global_statement           转到状态 31
+    if_statement               转到状态 32
+    while_statement            转到状态 33
+    for_statement              转到状态 34
+    return_statement           转到状态 35
+    break_statement            转到状态 36
+    continue_statement         转到状态 37
+
+
+State 105
+
+    6 function_definition: FUNCTION IDENTIFIER LP RP block .
+
+    $default  reduce using rule 6 (function_definition)
+
+
+State 106
+
+    5 function_definition: FUNCTION IDENTIFIER LP parameter_list RP . block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 114
+
+
+State 107
+
+    8 parameter_list: parameter_list COMMA . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 115
+
+
+State 108
+
+   57 if_statement: IF LP expression RP block .
+   58             | IF LP expression RP block . ELSE block
+   59             | IF LP expression RP block . elsif_list
+   60             | IF LP expression RP block . elsif_list ELSE block
+
+    ELSE   shift, and go to state 116
+    ELSIF  shift, and go to state 117
+
+    $default  reduce using rule 57 (if_statement)
+
+    elsif_list  转到状态 118
+    elsif       转到状态 119
+
+
+State 109
+
+   64 while_statement: WHILE LP expression RP block .
+
+    $default  reduce using rule 64 (while_statement)
+
+
+State 110
+
+   65 for_statement: FOR LP expression_opt SEMICOLON expression_opt . SEMICOLON expression_opt RP block
+
+    SEMICOLON  shift, and go to state 120
+
+
+State 111
+
+   72 block: LC RC .
+
+    $default  reduce using rule 72 (block)
+
+
+State 112
+
+   12 statement_list: statement_list . statement
+   71 block: LC statement_list . RC
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    IF              shift, and go to state 6
+    WHILE           shift, and go to state 7
+    FOR             shift, and go to state 8
+    RETURN_T        shift, and go to state 9
+    BREAK           shift, and go to state 10
+    CONTINUE        shift, and go to state 11
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    RC              shift, and go to state 121
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+    GLOBAL_T        shift, and go to state 17
+
+    expression                 转到状态 21
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    statement                  转到状态 122
+    global_statement           转到状态 31
+    if_statement               转到状态 32
+    while_statement            转到状态 33
+    for_statement              转到状态 34
+    return_statement           转到状态 35
+    break_statement            转到状态 36
+    continue_statement         转到状态 37
+
+
+State 113
+
+   11 statement_list: statement .
+
+    $default  reduce using rule 11 (statement_list)
+
+
+State 114
+
+    5 function_definition: FUNCTION IDENTIFIER LP parameter_list RP block .
+
+    $default  reduce using rule 5 (function_definition)
+
+
+State 115
+
+    8 parameter_list: parameter_list COMMA IDENTIFIER .
+
+    $default  reduce using rule 8 (parameter_list)
+
+
+State 116
+
+   58 if_statement: IF LP expression RP block ELSE . block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 123
+
+
+State 117
+
+   63 elsif: ELSIF . LP expression RP block
+
+    LP  shift, and go to state 124
+
+
+State 118
+
+   59 if_statement: IF LP expression RP block elsif_list .
+   60             | IF LP expression RP block elsif_list . ELSE block
+   62 elsif_list: elsif_list . elsif
+
+    ELSE   shift, and go to state 125
+    ELSIF  shift, and go to state 117
+
+    $default  reduce using rule 59 (if_statement)
+
+    elsif  转到状态 126
+
+
+State 119
+
+   61 elsif_list: elsif .
+
+    $default  reduce using rule 61 (elsif_list)
+
+
+State 120
+
+   65 for_statement: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON . expression_opt RP block
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    $default  reduce using rule 66 (expression_opt)
+
+    expression                 转到状态 44
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+    expression_opt             转到状态 127
+
+
+State 121
+
+   71 block: LC statement_list RC .
+
+    $default  reduce using rule 71 (block)
+
+
+State 122
+
+   12 statement_list: statement_list statement .
+
+    $default  reduce using rule 12 (statement_list)
+
+
+State 123
+
+   58 if_statement: IF LP expression RP block ELSE block .
+
+    $default  reduce using rule 58 (if_statement)
+
+
+State 124
+
+   63 elsif: ELSIF LP . expression RP block
+
+    INT_LITERAL     shift, and go to state 1
+    DOUBLE_LITERAL  shift, and go to state 2
+    STRING_LITERAL  shift, and go to state 3
+    IDENTIFIER      shift, and go to state 4
+    NULL_T          shift, and go to state 12
+    LP              shift, and go to state 13
+    SUB             shift, and go to state 14
+    TRUE_T          shift, and go to state 15
+    FALSE_T         shift, and go to state 16
+
+    expression                 转到状态 128
+    logical_or_expression      转到状态 22
+    logical_and_expression     转到状态 23
+    equality_expression        转到状态 24
+    relational_expression      转到状态 25
+    additive_expression        转到状态 26
+    multiplicative_expression  转到状态 27
+    unary_expression           转到状态 28
+    primary_expression         转到状态 29
+
+
+State 125
+
+   60 if_statement: IF LP expression RP block elsif_list ELSE . block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 129
+
+
+State 126
+
+   62 elsif_list: elsif_list elsif .
+
+    $default  reduce using rule 62 (elsif_list)
+
+
+State 127
+
+   65 for_statement: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt . RP block
+
+    RP  shift, and go to state 130
+
+
+State 128
+
+   63 elsif: ELSIF LP expression . RP block
+
+    RP  shift, and go to state 131
+
+
+State 129
+
+   60 if_statement: IF LP expression RP block elsif_list ELSE block .
+
+    $default  reduce using rule 60 (if_statement)
+
+
+State 130
+
+   65 for_statement: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP . block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 132
+
+
+State 131
+
+   63 elsif: ELSIF LP expression RP . block
+
+    LC  shift, and go to state 104
+
+    block  转到状态 133
+
+
+State 132
+
+   65 for_statement: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block .
+
+    $default  reduce using rule 65 (for_statement)
+
+
+State 133
+
+   63 elsif: ELSIF LP expression RP block .
+
+    $default  reduce using rule 63 (elsif)

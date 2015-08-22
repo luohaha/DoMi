@@ -88,26 +88,34 @@ static StatementResult execute_global_statement(CRB_Interpreter *inter, LocalEnv
     return result;
 }
 
-static StatementResult
-execute_elsif(CRB_Interpreter *inter, LocalEnvironment *env,
-              Elsif *elsif_list, CRB_Boolean *executed)
+/*
+  else if 的执行
+*/
+static StatementResult execute_elsif(DM_Interpreter *inter, LocalEnvironment *env,
+              Elsif *elsif_list, DM_Boolean *executed)
 {
     StatementResult result;
-    CRB_Value   cond;
+    DM_Value   cond;
     Elsif *pos;
 
-    *executed = CRB_FALSE;
+    *executed = DM_FALSE;
     result.type = NORMAL_STATEMENT_RESULT;
     for (pos = elsif_list; pos; pos = pos->next) {
-        cond = crb_eval_expression(inter, env, pos->condition);
-        if (cond.type != CRB_BOOLEAN_VALUE) {
-            crb_runtime_error(pos->condition->line_number,
+      /*
+        计算出else if中的判断语句
+       */
+        cond = dm_eval_expression(inter, env, pos->condition);
+        if (cond.type != DM_BOOLEAN_VALUE) {
+            dm_runtime_error(pos->condition->line_number,
                               NOT_BOOLEAN_TYPE_ERR, MESSAGE_ARGUMENT_END);
         }
         if (cond.u.boolean_value) {
-            result = crb_execute_statement_list(inter, env,
+            result = dm_execute_statement_list(inter, env,
                                                 pos->block->statement_list);
-            *executed = CRB_TRUE;
+            /*
+              执行成功
+             */
+            *executed = DM_TRUE;
             if (result.type != NORMAL_STATEMENT_RESULT)
                 goto FUNC_END;
         }
@@ -135,22 +143,29 @@ static StatementResult execute_if_statement(DM_Interpreter *inter, LocalEnvironm
         dm_runtime_error(statement->u.if_s.condition->line_number,
                           NOT_BOOLEAN_TYPE_ERR, MESSAGE_ARGUMENT_END);
     }
-    DBG_assert(cond.type == CRB_BOOLEAN_VALUE, ("cond.type..%d", cond.type));
+    DBG_assert(cond.type == DM_BOOLEAN_VALUE, ("cond.type..%d", cond.type));
 
+    /*
+      if判断为true
+     */
     if (cond.u.boolean_value) {
-        result = crb_execute_statement_list(inter, env,
-                                            statement->u.if_s.then_block
-                                            ->statement_list);
+      /*
+        执行then后面的语句
+       */
+        result = dm_execute_statement_list(inter, env,
+                                            statement->u.if_s.then_block->statement_list);
     } else {
-        CRB_Boolean elsif_executed;
+        DM_Boolean elsif_executed;
         result = execute_elsif(inter, env, statement->u.if_s.elsif_list,
                                &elsif_executed);
         if (result.type != NORMAL_STATEMENT_RESULT)
             goto FUNC_END;
+        /*
+          如果else if没有被执行，再来执行else里面的block
+         */
         if (!elsif_executed && statement->u.if_s.else_block) {
-            result = crb_execute_statement_list(inter, env,
-                                                statement->u.if_s.else_block
-                                                ->statement_list);
+            result = dm_execute_statement_list(inter, env,
+                                                statement->u.if_s.else_block->statement_list);
         }
     }
 

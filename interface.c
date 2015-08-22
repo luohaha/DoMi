@@ -98,6 +98,9 @@ static void release_global_strings(CRB_Interpreter *interpreter) {
 */
 void DM_dispose_interpreter(CRB_Interpreter *interpreter)
 {
+  /*
+    因为string类型比较特殊（存在引用计数）,需要单独回收
+   */
     release_global_strings(interpreter);
 
     /*回收运行内存*/

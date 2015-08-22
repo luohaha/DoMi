@@ -69,7 +69,13 @@ void DM_interpret(DM_Interpreter *interpreter)
     创建远行时的内存
    */
     interpreter->execute_storage = MEM_open_storage(0);
+    /*
+      添加stdin stdout stderr 这些native_pointer 到全局变量
+     */
     dm_add_std_fp(interpreter);
+    /*
+      将语句按照链表顺序执行
+     */
     dm_execute_statement_list(interpreter, NULL, interpreter->statement_list);
 }
 

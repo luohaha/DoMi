@@ -4,29 +4,36 @@
 #include "DBG.h"
 #include "domi.h"
 
-static StatementResult
-execute_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+static StatementResult execute_statement(DM_Interpreter *inter, LocalEnvironment *env,
                   Statement *statement);
 
-static StatementResult
-execute_expression_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+
+/*
+  表达式语句执行
+*/
+static StatementResult execute_expression_statement(DM_Interpreter *inter, LocalEnvironment *env,
                              Statement *statement)
 {
     StatementResult result;
-    CRB_Value v;
+    DM_Value v;
 
     result.type = NORMAL_STATEMENT_RESULT;
 
-    v = crb_eval_expression(inter, env, statement->u.expression_s);
-    if (v.type == CRB_STRING_VALUE) {
-        crb_release_string(v.u.string_value);
+    /*
+      进行表达式评估
+     */
+    v = dm_eval_expression(inter, env, statement->u.expression_s);
+    if (v.type == DM_STRING_VALUE) {
+        dm_release_string(v.u.string_value);
     }
 
     return result;
 }
 
-static StatementResult
-execute_global_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  global语句
+ */
+static StatementResult execute_global_statement(CRB_Interpreter *inter, LocalEnvironment *env,
                          Statement *statement)
 {
     IdentifierList *pos;
@@ -34,8 +41,12 @@ execute_global_statement(CRB_Interpreter *inter, LocalEnvironment *env,
 
     result.type = NORMAL_STATEMENT_RESULT;
 
+    /*
+      env保存当前运行函数的局部变量，所以在声明global时,
+      不能在函数外使用global，env==null时，在函数外
+     */
     if (env == NULL) {
-        crb_runtime_error(statement->line_number,
+        dm_runtime_error(statement->line_number,
                           GLOBAL_STATEMENT_IN_TOPLEVEL_ERR,
                           MESSAGE_ARGUMENT_END);
     }
@@ -45,16 +56,27 @@ execute_global_statement(CRB_Interpreter *inter, LocalEnvironment *env,
         Variable *variable;
         for (ref_pos = env->global_variable; ref_pos;
              ref_pos = ref_pos->next) {
+          /*当前的变量在全局变量已经找到，goto继续查找下一个*/
             if (!strcmp(ref_pos->variable->name, pos->name))
                 goto NEXT_IDENTIFIER;
         }
-        variable = crb_search_global_variable(inter, pos->name);
+        /*
+          如果找不到全局变量，再来查找全局变量
+          ???
+         */
+        variable = dm_search_global_variable(inter, pos->name);
         if (variable == NULL) {
-            crb_runtime_error(statement->line_number,
+          /*
+            报错
+           */
+            dm_runtime_error(statement->line_number,
                               GLOBAL_VARIABLE_NOT_FOUND_ERR,
                               STRING_MESSAGE_ARGUMENT, "name", pos->name,
                               MESSAGE_ARGUMENT_END);
         }
+        /*
+          将其插入env的全局链表的头部
+         */
         new_ref = MEM_malloc(sizeof(GlobalVariableRef));
         new_ref->variable = variable;
         new_ref->next = env->global_variable;
@@ -95,17 +117,22 @@ execute_elsif(CRB_Interpreter *inter, LocalEnvironment *env,
     return result;
 }
 
-static StatementResult
-execute_if_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  if语句的执行
+*/
+static StatementResult execute_if_statement(DM_Interpreter *inter, LocalEnvironment *env,
                      Statement *statement)
 {
     StatementResult result;
-    CRB_Value   cond;
+    DM_Value   cond;
 
     result.type = NORMAL_STATEMENT_RESULT;
-    cond = crb_eval_expression(inter, env, statement->u.if_s.condition);
-    if (cond.type != CRB_BOOLEAN_VALUE) {
-        crb_runtime_error(statement->u.if_s.condition->line_number,
+    /*
+      计算出if中的条件判断
+     */
+    cond = dm_eval_expression(inter, env, statement->u.if_s.condition);
+    if (cond.type != DM_BOOLEAN_VALUE) {
+        dm_runtime_error(statement->u.if_s.condition->line_number,
                           NOT_BOOLEAN_TYPE_ERR, MESSAGE_ARGUMENT_END);
     }
     DBG_assert(cond.type == CRB_BOOLEAN_VALUE, ("cond.type..%d", cond.type));
@@ -131,31 +158,48 @@ execute_if_statement(CRB_Interpreter *inter, LocalEnvironment *env,
     return result;
 }
 
-static StatementResult
-execute_while_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  执行while语句
+*/
+static StatementResult execute_while_statement(DM_Interpreter *inter, LocalEnvironment *env,
                         Statement *statement)
 {
     StatementResult result;
-    CRB_Value   cond;
+    /*
+      while中的条件判断
+     */
+    DM_Value   cond;
 
     result.type = NORMAL_STATEMENT_RESULT;
     for (;;) {
-        cond = crb_eval_expression(inter, env, statement->u.while_s.condition);
-        if (cond.type != CRB_BOOLEAN_VALUE) {
-            crb_runtime_error(statement->u.while_s.condition->line_number,
+      /*
+        获取条件判断的值
+       */
+        cond = dm_eval_expression(inter, env, statement->u.while_s.condition);
+        if (cond.type != DM_BOOLEAN_VALUE) {
+            dm_runtime_error(statement->u.while_s.condition->line_number,
                               NOT_BOOLEAN_TYPE_ERR, MESSAGE_ARGUMENT_END);
         }
-        DBG_assert(cond.type == CRB_BOOLEAN_VALUE,
+        DBG_assert(cond.type == DM_BOOLEAN_VALUE,
                    ("cond.type..%d", cond.type));
+        /*
+          while中条件不正确，跳出while
+         */
         if (!cond.u.boolean_value)
             break;
 
-        result = crb_execute_statement_list(inter, env,
+        /*
+          执行while内部语句
+         */
+        result = dm_execute_statement_list(inter, env,
                                             statement->u.while_s.block
                                             ->statement_list);
         if (result.type == RETURN_STATEMENT_RESULT) {
             break;
         } else if (result.type == BREAK_STATEMENT_RESULT) {
+          /*
+            使用了return
+           */
             result.type = NORMAL_STATEMENT_RESULT;
             break;
         }
@@ -164,34 +208,38 @@ execute_while_statement(CRB_Interpreter *inter, LocalEnvironment *env,
     return result;
 }
 
-static StatementResult
-execute_for_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  for语句执行
+*/
+static StatementResult execute_for_statement(DM_Interpreter *inter, LocalEnvironment *env,
                       Statement *statement)
 {
     StatementResult result;
-    CRB_Value   cond;
+    DM_Value   cond;
 
     result.type = NORMAL_STATEMENT_RESULT;
 
     if (statement->u.for_s.init) {
-        crb_eval_expression(inter, env, statement->u.for_s.init);
+        dm_eval_expression(inter, env, statement->u.for_s.init);
     }
     for (;;) {
         if (statement->u.for_s.condition) {
-            cond = crb_eval_expression(inter, env,
+            cond = dm_eval_expression(inter, env,
                                        statement->u.for_s.condition);
-            if (cond.type != CRB_BOOLEAN_VALUE) {
-                crb_runtime_error(statement->u.for_s.condition->line_number,
+            if (cond.type != DM_BOOLEAN_VALUE) {
+                dm_runtime_error(statement->u.for_s.condition->line_number,
                                   NOT_BOOLEAN_TYPE_ERR, MESSAGE_ARGUMENT_END);
             }
-            DBG_assert(cond.type == CRB_BOOLEAN_VALUE,
+            DBG_assert(cond.type == DM_BOOLEAN_VALUE,
                        ("cond.type..%d", cond.type));
             if (!cond.u.boolean_value)
                 break;
         }
-        result = crb_execute_statement_list(inter, env,
-                                            statement->u.for_s.block
-                                            ->statement_list);
+        /*
+          执行for里面的block的statementlist
+         */
+        result = dm_execute_statement_list(inter, env,
+                                            statement->u.for_s.block->statement_list);
         if (result.type == RETURN_STATEMENT_RESULT) {
             break;
         } else if (result.type == BREAK_STATEMENT_RESULT) {
@@ -199,34 +247,45 @@ execute_for_statement(CRB_Interpreter *inter, LocalEnvironment *env,
             break;
         }
 
+        /*
+          执行for的第三个段
+         */
         if (statement->u.for_s.post) {
-            crb_eval_expression(inter, env, statement->u.for_s.post);
+            dm_eval_expression(inter, env, statement->u.for_s.post);
         }
     }
 
     return result;
 }
 
-static StatementResult
-execute_return_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+
+/*
+  result语句
+ */
+static StatementResult execute_return_statement(DM_Interpreter *inter, LocalEnvironment *env,
                          Statement *statement)
 {
     StatementResult result;
 
     result.type = RETURN_STATEMENT_RESULT;
     if (statement->u.return_s.return_value) {
+      /*
+        如果return后面有语句
+       */
         result.u.return_value
-            = crb_eval_expression(inter, env,
+            = dm_eval_expression(inter, env,
                                   statement->u.return_s.return_value);
     } else {
-        result.u.return_value.type = CRB_NULL_VALUE;
+        result.u.return_value.type = DM_NULL_VALUE;
     }
 
     return result;
 }
 
-static StatementResult
-execute_break_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  break语句
+*/
+static StatementResult execute_break_statement(CRB_Interpreter *inter, LocalEnvironment *env,
                         Statement *statement)
 {
     StatementResult result;
@@ -236,8 +295,10 @@ execute_break_statement(CRB_Interpreter *inter, LocalEnvironment *env,
     return result;
 }
 
-static StatementResult
-execute_continue_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  continue
+*/
+static StatementResult execute_continue_statement(CRB_Interpreter *inter, LocalEnvironment *env,
                            Statement *statement)
 {
     StatementResult result;
@@ -247,14 +308,19 @@ execute_continue_statement(CRB_Interpreter *inter, LocalEnvironment *env,
     return result;
 }
 
-static StatementResult
-execute_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  执行statement
+*/
+static StatementResult execute_statement(CRB_Interpreter *inter, LocalEnvironment *env,
                   Statement *statement)
 {
     StatementResult result;
 
     result.type = NORMAL_STATEMENT_RESULT;
 
+    /*
+      根据不同类型执行
+     */
     switch (statement->type) {
     case EXPRESSION_STATEMENT:
         result = execute_expression_statement(inter, env, statement);
@@ -288,15 +354,23 @@ execute_statement(CRB_Interpreter *inter, LocalEnvironment *env,
     return result;
 }
 
-StatementResult
-crb_execute_statement_list(CRB_Interpreter *inter, LocalEnvironment *env,
+/*
+  按照statement的list顺序来执行statement
+*/
+StatementResult dm_execute_statement_list(DM_Interpreter *inter, LocalEnvironment *env,
                            StatementList *list)
 {
     StatementList *pos;
     StatementResult result;
 
     result.type = NORMAL_STATEMENT_RESULT;
+    /*
+      顺序执行statementlist上的statement
+     */
     for (pos = list; pos; pos = pos->next) {
+      /*
+        执行
+       */
         result = execute_statement(inter, env, pos->statement);
         if (result.type != NORMAL_STATEMENT_RESULT)
             goto FUNC_END;

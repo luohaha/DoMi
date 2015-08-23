@@ -13,7 +13,7 @@ OBJS = \
   util.o\
   native.o\
   error.o\
-  error_message.o\
+  error_msg.o\
   ./MEM/mem.o\
   ./DEG/dbg.o
 CFLAGS = -c -g -Wall -Wswitch-enum -ansi -pedantic -DDEBUG
@@ -37,14 +37,14 @@ lex.yy.o: lex.yy.c domi.h MEM.h
 	$(CC) -c -g $*.c $(INCLUDES)
 .c.o:
 	$(CC) $(CFLAGS) $*.c $(INCLUDES)
-./memory/mem.o:
+./MEM/mem.o:
 	cd ./MEM; $(MAKE);
-./debug/dbg.o:
+./DEG/dbg.o:
 	cd ./DEG; $(MAKE);
 ############################################################
 create.o: create.c MEM.h DBG.h domi.h DM.h DM_dev.h
 error.o: error.c MEM.h domi.h DM.h DM_dev.h
-error_message.o: error_message.c domi.h MEM.h DM.h DM_dev.h
+error_msg.o: error_msg.c domi.h MEM.h DM.h DM_dev.h
 eval.o: eval.c MEM.h DBG.h domi.h DM.h DM_dev.h
 execute.o: execute.c MEM.h DBG.h domi.h DM.h DM_dev.h
 interface.o: interface.c MEM.h DBG.h domi.h DM.h DM_dev.h

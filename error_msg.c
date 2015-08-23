@@ -1,7 +1,7 @@
 #include<string.h>
 #include "domi.h"
 
-MessageFormat crb_compile_error_message_format[] = {
+MessageFormat dm_compile_error_message_format[] = {
     {"dummy"},
     {"在($(token))附近发生语法错误"},
     {"不正确的字符($(bad_char))"},
@@ -9,7 +9,7 @@ MessageFormat crb_compile_error_message_format[] = {
     {"dummy"},
 };
 
-MessageFormat crb_runtime_error_message_format[] = {
+MessageFormat dm_runtime_error_message_format[] = {
     {"dummy"},
     {"找不到变量($(name))。"},
     {"找不到函数($(name))。"},

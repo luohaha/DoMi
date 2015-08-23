@@ -8,7 +8,7 @@
 /*
 定义只能在内部使用的解释器
 */
-static CRB_Interpreter *st_current_interpreter;
+static DM_Interpreter *st_current_interpreter;
 
 /*
 获取当前的解释器
@@ -27,8 +27,8 @@ void dm_set_current_interpreter(DM_Interpreter *inter)
 }
 
 /* BUGBUG
-CRB_NativeFunctionProc *
-crb_search_native_function(CRB_Interpreter *inter, char *name)
+DM_NativeFunctionProc *
+dm_search_native_function(DM_Interpreter *inter, char *name)
 {
     NativeFunction *pos;
 
@@ -53,7 +53,7 @@ FunctionDefinition *dm_search_function(char *name)
 
     inter = dm_get_current_interpreter();
     for (pos = inter->function_list; pos; pos = pos->next) {
-      if (!strcmp(pos->name, name))//比较函数名,相等时break
+      if (!strcmp(pos->name, name))/*比较函数名,相等时break*/
             break;
     }
     return pos;
@@ -62,9 +62,9 @@ FunctionDefinition *dm_search_function(char *name)
 void *dm_malloc(size_t size)
 {
     void *p;
-    CRB_Interpreter *inter;
+    DM_Interpreter *inter;
 
-    inter = crb_get_current_interpreter();
+    inter = dm_get_current_interpreter();
     p = MEM_storage_malloc(inter->interpreter_storage, size);
 
     return p;
@@ -96,7 +96,7 @@ Variable *dm_search_local_variable(LocalEnvironment *env, char *identifier)
     if (pos == NULL) {
         return NULL;
     } else {
-        retur pos;
+        return pos;
     }
 }
 
@@ -118,14 +118,14 @@ Variable *dm_search_global_variable(DM_Interpreter *inter, char *identifier)
 添加局部变量
 */
 void dm_add_local_variable(LocalEnvironment *env,
-                       char *identifier, CRB_Value *value)
+                       char *identifier, DM_Value *value)
 {
     Variable    *new_variable;
 
     new_variable = MEM_malloc(sizeof(Variable));
     new_variable->name = identifier;
     new_variable->value = *value;
-    //将新的局部变量插入局部变量链表的头部
+    /*将新的局部变量插入局部变量链表的头部*/
     new_variable->next = env->variable;
     env->variable = new_variable;
 }
@@ -134,12 +134,12 @@ void dm_add_local_variable(LocalEnvironment *env,
 将变量插到解释器全局变量链表的头部
 */
 void DM_add_global_variable(DM_Interpreter *inter, char *identifier,
-                        CRB_Value *value)
+                        DM_Value *value)
 {
     Variable    *new_variable;
 
-    new_variable = crb_execute_malloc(inter, sizeof(Variable));
-    new_variable->name = crb_execute_malloc(inter, strlen(identifier) + 1);
+    new_variable = dm_execute_malloc(inter, sizeof(Variable));
+    new_variable->name = dm_execute_malloc(inter, strlen(identifier) + 1);
     strcpy(new_variable->name, identifier);
     new_variable->next = inter->variable;
     inter->variable = new_variable;

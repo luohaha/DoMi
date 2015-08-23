@@ -558,13 +558,14 @@ int yywrap(void)
 static void increment_line_number(void)
 
 {
-
-    dm_get_current_interpreter()->current_line_number++;
+    DM_Interpreter *getnow;
+    getnow = dm_get_current_interpreter();
+    (*getnow).current_line_number++;
 
 }
 
 
-#line 568 "lex.yy.c"
+#line 569 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -780,10 +781,10 @@ YY_DECL
 		}
 
 	{
-#line 37 "domi.l"
+#line 38 "domi.l"
 
 
-#line 787 "lex.yy.c"
+#line 788 "lex.yy.c"
 
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
@@ -842,172 +843,172 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 39 "domi.l"
+#line 40 "domi.l"
 return FUNCTION;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 41 "domi.l"
+#line 42 "domi.l"
 return IF;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 43 "domi.l"
+#line 44 "domi.l"
 return ELSE;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 45 "domi.l"
+#line 46 "domi.l"
 return ELSIF;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 47 "domi.l"
+#line 48 "domi.l"
 return WHILE;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 49 "domi.l"
+#line 50 "domi.l"
 return FOR;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 51 "domi.l"
+#line 52 "domi.l"
 return RETURN_T;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 53 "domi.l"
+#line 54 "domi.l"
 return BREAK;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 55 "domi.l"
+#line 56 "domi.l"
 return CONTINUE;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 57 "domi.l"
+#line 58 "domi.l"
 return NULL_T;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 59 "domi.l"
+#line 60 "domi.l"
 return TRUE_T;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 61 "domi.l"
+#line 62 "domi.l"
 return FALSE_T;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 63 "domi.l"
+#line 64 "domi.l"
 return GLOBAL_T;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 65 "domi.l"
+#line 66 "domi.l"
 return LP;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 67 "domi.l"
+#line 68 "domi.l"
 return RP;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 69 "domi.l"
+#line 70 "domi.l"
 return LC;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 71 "domi.l"
+#line 72 "domi.l"
 return RC;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 73 "domi.l"
+#line 74 "domi.l"
 return SEMICOLON;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 75 "domi.l"
+#line 76 "domi.l"
 return COMMA;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 77 "domi.l"
+#line 78 "domi.l"
 return LOGICAL_AND;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 79 "domi.l"
+#line 80 "domi.l"
 return LOGICAL_OR;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 81 "domi.l"
+#line 82 "domi.l"
 return ASSIGN;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 83 "domi.l"
+#line 84 "domi.l"
 return EQ;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 85 "domi.l"
+#line 86 "domi.l"
 return NE;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 87 "domi.l"
+#line 88 "domi.l"
 return GT;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 89 "domi.l"
+#line 90 "domi.l"
 return GE;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 91 "domi.l"
+#line 92 "domi.l"
 return LT;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 93 "domi.l"
+#line 94 "domi.l"
 return LE;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 95 "domi.l"
+#line 96 "domi.l"
 return ADD;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 97 "domi.l"
+#line 98 "domi.l"
 return SUB;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 99 "domi.l"
+#line 100 "domi.l"
 return MUL;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 101 "domi.l"
+#line 102 "domi.l"
 return DIV;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 103 "domi.l"
+#line 104 "domi.l"
 return MOD;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 105 "domi.l"
+#line 106 "domi.l"
 {
 
     yylval.identifier = dm_create_identifier(yytext);
@@ -1018,7 +1019,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 113 "domi.l"
+#line 114 "domi.l"
 {
 
     Expression  *expression = dm_alloc_expression(INT_EXPRESSION);
@@ -1033,7 +1034,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 125 "domi.l"
+#line 126 "domi.l"
 {
 
     Expression  *expression = dm_alloc_expression(DOUBLE_EXPRESSION);
@@ -1048,7 +1049,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 137 "domi.l"
+#line 138 "domi.l"
 {
 
     dm_open_string_literal();
@@ -1059,23 +1060,23 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 145 "domi.l"
+#line 146 "domi.l"
 ;
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 147 "domi.l"
+#line 148 "domi.l"
 {increment_line_number();}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 149 "domi.l"
+#line 150 "domi.l"
 BEGIN COMMENT;
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 151 "domi.l"
+#line 152 "domi.l"
 {
 
     char buf[LINE_BUF_SIZE];
@@ -1107,7 +1108,7 @@ YY_RULE_SETUP
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 179 "domi.l"
+#line 180 "domi.l"
 {
 
     increment_line_number();
@@ -1118,12 +1119,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 187 "domi.l"
+#line 188 "domi.l"
 ;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 189 "domi.l"
+#line 190 "domi.l"
 {
 
     Expression *expression = dm_alloc_expression(STRING_EXPRESSION);
@@ -1141,7 +1142,7 @@ YY_RULE_SETUP
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 203 "domi.l"
+#line 204 "domi.l"
 {
 
     dm_add_string_literal('\n');
@@ -1152,35 +1153,35 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 211 "domi.l"
+#line 212 "domi.l"
 dm_add_string_literal('"');
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 213 "domi.l"
+#line 214 "domi.l"
 dm_add_string_literal('\n');
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 215 "domi.l"
+#line 216 "domi.l"
 dm_add_string_literal('\t');
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 217 "domi.l"
+#line 218 "domi.l"
 dm_add_string_literal('\\');
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 219 "domi.l"
+#line 220 "domi.l"
 dm_add_string_literal(yytext[0]);
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 221 "domi.l"
+#line 222 "domi.l"
 ECHO;
 	YY_BREAK
-#line 1184 "lex.yy.c"
+#line 1185 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(STRING_LITERAL_STATE):
@@ -2177,7 +2178,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 220 "domi.l"
+#line 221 "domi.l"
 
 
 

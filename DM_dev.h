@@ -33,17 +33,17 @@ typedef struct {
 内部类型，因为domi在使用的时候是不用预先声明类型的，所以需要内部类型来存储不同的值
 */
 typedef enum {
-    //boolean
+  /*boolean*/
     DM_BOOLEAN_VALUE = 1,
-    //int
+    /*int*/
     DM_INT_VALUE,
-    //double
+    /*double*/
     DM_DOUBLE_VALUE,
-    //string
+    /*string*/
     DM_STRING_VALUE,
-    //指针
+    /*指针*/
     DM_NATIVE_POINTER_VALUE,
-    //null
+    /*null*/
     DM_NULL_VALUE
 
 } DM_ValueType;

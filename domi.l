@@ -25,8 +25,9 @@ int yywrap(void)
 static void increment_line_number(void)
 
 {
-
-    dm_get_current_interpreter()->current_line_number++;
+    DM_Interpreter *getnow;
+    getnow = dm_get_current_interpreter();
+    (*getnow).current_line_number++;
 
 }
 

@@ -3,16 +3,16 @@
 #include "MEM.h"
 #include "domi.h"
 
-//每次拓展容量时，增加的大小
+/*每次拓展容量时，增加的大小*/
 #define STRING_ALLOC_SIZE       (256)
 
 /*
 string的地址
 */
 static char *st_string_literal_buffer = NULL;
-//当前已经使用
+/*当前已经使用*/
 static int st_string_literal_buffer_size = 0;
-//当前分配
+/*当前分配*/
 static int st_string_literal_buffer_alloc_size = 0;
 
 /*

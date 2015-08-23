@@ -2,12 +2,12 @@
 #include <string.h>
 #include "MEM.h"
 #include "DBG.h"
-#include "CRB_dev.h"
+#include "DM_dev.h"
 #include "domi.h"
 
 #define NATIVE_LIB_NAME "domi.lang.file"
 
-static CRB_NativePointerInfo st_native_lib_info = {
+static DM_NativePointerInfo st_native_lib_info = {
     NATIVE_LIB_NAME
 };
 
@@ -17,9 +17,9 @@ static CRB_NativePointerInfo st_native_lib_info = {
 DM_Value dm_nv_print_proc(DM_Interpreter *interpreter,
                             int arg_count, DM_Value *args)
 {
-    CRB_Value value;
+    DM_Value value;
 
-    value.type = CRB_NULL_VALUE;
+    value.type = DM_NULL_VALUE;
 
     if (arg_count < 1) {
         dm_runtime_error(0, ARGUMENT_TOO_FEW_ERR,
@@ -77,8 +77,8 @@ DM_Value dm_nv_fopen_proc(DM_Interpreter *interpreter,
     /*
       args符合条件
      */
-    if (args[0].type != CRB_STRING_VALUE
-        || args[1].type != CRB_STRING_VALUE) {
+    if (args[0].type != DM_STRING_VALUE
+        || args[1].type != DM_STRING_VALUE) {
         dm_runtime_error(0, FOPEN_ARGUMENT_TYPE_ERR,
                           MESSAGE_ARGUMENT_END);
     }
@@ -90,12 +90,12 @@ DM_Value dm_nv_fopen_proc(DM_Interpreter *interpreter,
     fp = fopen(args[0].u.string_value->string,
                args[1].u.string_value->string);
     if (fp == NULL) {
-        value.type = CRB_NULL_VALUE;
+        value.type = DM_NULL_VALUE;
     } else {
       /*
         打开成功
        */
-        value.type = CRB_NATIVE_POINTER_VALUE;
+        value.type = DM_NATIVE_POINTER_VALUE;
         value.u.native_pointer.info = &st_native_lib_info;
         value.u.native_pointer.pointer = fp;
     }
@@ -240,9 +240,9 @@ DM_Value dm_nv_fputs_proc(DM_Interpreter *interpreter,
 /*
   将stdin stdout stderr 加入
 */
-void dm_add_std_fp(CRB_Interpreter *inter)
+void dm_add_std_fp(DM_Interpreter *inter)
 {
-    CRB_Value fp_value;
+    DM_Value fp_value;
 
     fp_value.type = DM_NATIVE_POINTER_VALUE;
     fp_value.u.native_pointer.info = &st_native_lib_info;

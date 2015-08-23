@@ -10,14 +10,14 @@
 */
 void dm_function_define(char *identifier, ParameterList *parameter_list, Block *block)
 {
-    //函数的结构
+  /*函数的结构*/
     FunctionDefinition *f;
-    //内部解释器
+    /*内部解释器*/
     DM_Interpreter *inter;
 
     if (dm_search_function(identifier)) {
-    //如果发现重名的函数，则报错误
-        crb_compile_error(FUNCTION_MULTIPLE_DEFINE_ERR,
+      /*如果发现重名的函数，则报错误*/
+        dm_compile_error(FUNCTION_MULTIPLE_DEFINE_ERR,
 
                           STRING_MESSAGE_ARGUMENT, "name", identifier,
 
@@ -26,21 +26,21 @@ void dm_function_define(char *identifier, ParameterList *parameter_list, Block *
         return;
 
     }
-    //获取当前的解释器
+    /*获取当前的解释器*/
     inter = dm_get_current_interpreter();
 
 
 
-    f = crb_malloc(sizeof(FunctionDefinition));
-    //函数的名称
+    f = dm_malloc(sizeof(FunctionDefinition));
+    /*函数的名称*/
     f->name = identifier;
-    //函数的类型为自定义
+    /*函数的类型为自定义*/
     f->type = DOMI_FUNCTION_DEFINITION;
-    //保存参数链表
-    f->u.crowbar_f.parameter = parameter_list;
-    //保存函数的主体
-    f->u.crowbar_f.block = block;
-    //将当前的函数，插到解释器的函数链表的头部
+    /*保存参数链表*/
+    f->u.domi_f.parameter = parameter_list;
+    /*保存函数的主体*/
+    f->u.domi_f.block = block;
+    /*将当前的函数，插到解释器的函数链表的头部*/
     f->next = inter->function_list;
     inter->function_list = f;
 
@@ -55,12 +55,12 @@ ParameterList *dm_create_parameter(char *identifier)
 
     ParameterList       *p;
 
-    //分配空间
+    /*分配空间*/
 
     p = dm_malloc(sizeof(ParameterList));
-    //名称
+    /*名称*/
     p->name = identifier;
-    //下一个
+    /*下一个*/
     p->next = NULL;
 
 
@@ -79,12 +79,12 @@ ParameterList *dm_chain_parameter(ParameterList *list, char *identifier)
     ParameterList *pos;
 
 
-    //找到链表的尾部
+    /*找到链表的尾部*/
     for (pos = list; pos->next; pos = pos->next)
 
         ;
-    //插入尾部
-    pos->next = crb_create_parameter(identifier);
+    /*插入尾部*/
+    pos->next = dm_create_parameter(identifier);
 
     return list;
 
@@ -123,11 +123,11 @@ ArgumentList *dm_chain_argument_list(ArgumentList *list, Expression *expr)
     ArgumentList *pos;
 
 
-    //找到尾部
+    /*找到尾部*/
     for (pos = list; pos->next; pos = pos->next)
 
         ;
-    //插入
+    /*插入*/
     pos->next = dm_create_argument_list(expr);
 
 
@@ -175,11 +175,11 @@ StatementList *dm_chain_statement_list(StatementList *list, Statement *statement
         return dm_create_statement_list(statement);
 
 
-    //找到尾部
+    /*找到尾部*/
     for (pos = list; pos->next; pos = pos->next)
 
         ;
-    //插入
+    /*插入*/
     pos->next = dm_create_statement_list(statement);
 
 
@@ -200,10 +200,11 @@ Expression *dm_alloc_expression(ExpressionType type)
 
 
     exp = dm_malloc(sizeof(Expression));
-    //表达式类型
+    /*表达式类型*/
     exp->type = type;
-    //所在的行号
-    exp->line_number = dm_get_current_interpreter()->current_line_number;
+    /*所在的行号*/
+    DM_Interpreter * getnow = dm_get_current_interpreter();
+    exp->line_number = (*getnow).current_line_number;
 
 
 
@@ -221,11 +222,11 @@ Expression *dm_create_assign_expression(char *variable, Expression *operand)
     Expression *exp;
 
 
-    //类型为赋值表达式
+    /*类型为赋值表达式*/
     exp = dm_alloc_expression(ASSIGN_EXPRESSION);
-    //左边的变量名
+    /*左边的变量名*/
     exp->u.assign_expression.variable = variable;
-    //右边的表达式
+    /*右边的表达式*/
     exp->u.assign_expression.operand = operand;
 
 
@@ -292,9 +293,7 @@ Expression *dm_create_binary_expression(ExpressionType operator, Expression *lef
           这里做了一个提前计算，将二元表达式的最终值算出来，
           并且返回DM_Value
          */
-        v = dm_eval_binary_expression(dm_get_current_interpreter(),
-
-                                       NULL, operator, left, right);
+        v = dm_eval_binary_expression(dm_get_current_interpreter(), NULL, operator, left, right);
 
         /* Overwriting left hand expression. */
 
@@ -310,7 +309,7 @@ Expression *dm_create_binary_expression(ExpressionType operator, Expression *lef
     } else {
 
         Expression *exp;
-        //获取一个空的expresson
+        /*获取一个空的expresson*/
         exp = dm_alloc_expression(operator);
 
         exp->u.binary_expression.left = left;
@@ -337,7 +336,7 @@ Expression *dm_create_minus_expression(Expression *operand)
 
         || operand->type == DOUBLE_EXPRESSION) {
 
-        CRB_Value       v;
+        DM_Value       v;
 
         v = dm_eval_minus_expression(dm_get_current_interpreter(),
 
@@ -411,14 +410,14 @@ Expression *dm_create_function_call_expression(char *func_name, ArgumentList *ar
 /*
 创建boolean表达式
 */
-Expression *dm_create_boolean_expression(CRB_Boolean value)
+Expression *dm_create_boolean_expression(DM_Boolean value)
 {
 
     Expression *exp;
 
 
 
-    exp = crb_alloc_expression(BOOLEAN_EXPRESSION);
+    exp = dm_alloc_expression(BOOLEAN_EXPRESSION);
 
     exp->u.boolean_value = value;
 
@@ -432,14 +431,14 @@ Expression *dm_create_boolean_expression(CRB_Boolean value)
 /*
 创建null表达式
 */
-Expression *crb_create_null_expression(void)
+Expression *dm_create_null_expression(void)
 {
 
     Expression  *exp;
 
 
 
-    exp = crb_alloc_expression(NULL_EXPRESSION);
+    exp = dm_alloc_expression(NULL_EXPRESSION);
 
 
 
@@ -464,7 +463,8 @@ static Statement *alloc_statement(StatementType type)
 
     st->type = type;
 
-    st->line_number = dm_get_current_interpreter()->current_line_number;
+    DM_Interpreter *getnow = dm_get_current_interpreter();
+    st->line_number = (*getnow).current_line_number;
 
 
 
@@ -505,7 +505,7 @@ IdentifierList *dm_create_global_identifier(char *identifier)
 
 
     i_list = dm_malloc(sizeof(IdentifierList));
-    //标识符名字
+    /*标识符名字*/
     i_list->name = identifier;
 
     i_list->next = NULL;
@@ -526,11 +526,11 @@ IdentifierList *dm_chain_identifier(IdentifierList *list, char *identifier)
     IdentifierList *pos;
 
 
-    //找到尾部
+    /*找到尾部*/
     for (pos = list; pos->next; pos = pos->next)
 
         ;
-    //插入
+    /*插入*/
     pos->next = dm_create_global_identifier(identifier);
 
 
@@ -576,11 +576,11 @@ Elsif *dm_chain_elsif_list(Elsif *list, Elsif *add)
     Elsif *pos;
 
 
-    //找到尾部
+    /*找到尾部*/
     for (pos = list; pos->next; pos = pos->next)
 
         ;
-    //插入
+    /*插入*/
     pos->next = add;
 
 
@@ -650,9 +650,9 @@ Statement *dm_create_for_statement(Expression *init, Expression *cond, Expressio
     Statement *st;
 
 
-    //获取statement
+    /*获取statement*/
     st = alloc_statement(FOR_STATEMENT);
-    //赋值
+    /*赋值*/
     st->u.for_s.init = init;
 
     st->u.for_s.condition = cond;
@@ -677,9 +677,9 @@ Block *dm_create_block(StatementList *statement_list)
     Block *block;
 
 
-    //获取内存
-    block = crb_malloc(sizeof(Block));
-    //赋值
+    /*获取内存*/
+    block = dm_malloc(sizeof(Block));
+    /*赋值*/
     block->statement_list = statement_list;
 
 
@@ -689,14 +689,14 @@ Block *dm_create_block(StatementList *statement_list)
 }
 
 
-//创建只有一行表达式的语句（最简单的语句了!）,expression + ;
+/*创建只有一行表达式的语句（最简单的语句了!）,expression + ;*/
 Statement *dm_create_expression_statement(Expression *expression)
 {
 
     Statement *st;
 
 
-    //创建并且赋值
+    /*创建并且赋值*/
     st = alloc_statement(EXPRESSION_STATEMENT);
 
     st->u.expression_s = expression;
@@ -719,7 +719,7 @@ Statement *dm_create_return_statement(Expression *expression)
 
 
     st = alloc_statement(RETURN_STATEMENT);
-    //将return后的表达式赋值
+    /*将return后的表达式赋值*/
     st->u.return_s.return_value = expression;
 
 

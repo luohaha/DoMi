@@ -7,8 +7,8 @@
 #include "domi.h"
 
 extern char *yytext;
-extern MessageFormat crb_compile_error_message_format[];
-extern MessageFormat crb_runtime_error_message_format[];
+extern MessageFormat dm_compile_error_message_format[];
+extern MessageFormat dm_runtime_error_message_format[];
 
 typedef struct {
     char        *string;
@@ -64,11 +64,11 @@ static void add_character(VString *v, int ch)
  *错误信息中的可变部分的所有内容
  * */
 typedef struct {
-    //可变部分的类型
+  /*可变部分的类型*/
     MessageArgumentType type;
-    //可变部分的标识符
+  /*可变部分的标识符*/
     char        *name;
-    //可变部分的值
+  /*可变部分的值*/
     union {
         int     int_val;
         double  double_val;
@@ -86,13 +86,13 @@ static void create_message_argument(MessageArgument *arg, va_list ap)
 {
     int index = 0;
     MessageArgumentType type;
-    //获取可变部分的类型
+    /*获取可变部分的类型*/
     while ((type = va_arg(ap, MessageArgumentType)) != MESSAGE_ARGUMENT_END) {
         arg[index].type = type;
-        //获取可变部分的标识符
+        /*获取可变部分的标识符*/
         arg[index].name = va_arg(ap, char*);
         switch (type) {
-        //获取可变部分的内容
+          /*获取可变部分的内容*/
         case INT_MESSAGE_ARGUMENT:
             arg[index].u.int_val = va_arg(ap, int);
             break;
@@ -144,7 +144,7 @@ static void format_message(MessageFormat *format, VString *v, va_list ap)
     MessageArgument     arg[MESSAGE_ARGUMENT_MAX];
     MessageArgument     cur_arg;
 
-    //构造
+    
     create_message_argument(arg, ap);
 
     for (i = 0; format->format[i] != '\0'; i++) {
@@ -195,20 +195,20 @@ static void format_message(MessageFormat *format, VString *v, va_list ap)
 void
 self_check()
 {
-    if (strcmp(crb_compile_error_message_format[0].format, "dummy") != 0) {
+    if (strcmp(dm_compile_error_message_format[0].format, "dummy") != 0) {
         DBG_panic(("compile error message format error.\n"));
     }
-    if (strcmp(crb_compile_error_message_format
+    if (strcmp(dm_compile_error_message_format
                [COMPILE_ERROR_COUNT_PLUS_1].format,
                "dummy") != 0) {
         DBG_panic(("compile error message format error. "
                    "COMPILE_ERROR_COUNT_PLUS_1..%d\n",
                    COMPILE_ERROR_COUNT_PLUS_1));
     }
-    if (strcmp(crb_runtime_error_message_format[0].format, "dummy") != 0) {
+    if (strcmp(dm_runtime_error_message_format[0].format, "dummy") != 0) {
         DBG_panic(("runtime error message format error.\n"));
     }
-    if (strcmp(crb_runtime_error_message_format
+    if (strcmp(dm_runtime_error_message_format
                [RUNTIME_ERROR_COUNT_PLUS_1].format,
                "dummy") != 0) {
         DBG_panic(("runtime error message format error. "
@@ -228,9 +228,9 @@ void dm_compile_error(CompileError id, ...)
 
     self_check();
     va_start(ap, id);
-    line_number = crb_get_current_interpreter()->current_line_number;
+    line_number = dm_get_current_interpreter()->current_line_number;
     clear_v_string(&message);
-    format_message(&crb_compile_error_message_format[id],
+    format_message(&dm_compile_error_message_format[id],
                    &message, ap);
     fprintf(stderr, "%3d:%s\n", line_number, message.string);
     va_end(ap);
@@ -246,7 +246,7 @@ void dm_runtime_error(int line_number, RuntimeError id, ...)
     self_check();
     va_start(ap, id);
     clear_v_string(&message);
-    format_message(&crb_runtime_error_message_format[id],
+    format_message(&dm_runtime_error_message_format[id],
                    &message, ap);
     fprintf(stderr, "%3d:%s\n", line_number, message.string);
     va_end(ap);
@@ -265,7 +265,7 @@ yyerror(char const *str)
     } else {
         near_token = yytext;
     }
-    crb_compile_error(PARSE_ERR,
+    dm_compile_error(PARSE_ERR,
                       STRING_MESSAGE_ARGUMENT, "token", near_token,
                       MESSAGE_ARGUMENT_END);
 

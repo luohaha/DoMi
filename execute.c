@@ -33,7 +33,7 @@ static StatementResult execute_expression_statement(DM_Interpreter *inter, Local
 /*
   global语句
  */
-static StatementResult execute_global_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+static StatementResult execute_global_statement(DM_Interpreter *inter, LocalEnvironment *env,
                          Statement *statement)
 {
     IdentifierList *pos;
@@ -300,7 +300,7 @@ static StatementResult execute_return_statement(DM_Interpreter *inter, LocalEnvi
 /*
   break语句
 */
-static StatementResult execute_break_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+static StatementResult execute_break_statement(DM_Interpreter *inter, LocalEnvironment *env,
                         Statement *statement)
 {
     StatementResult result;
@@ -313,7 +313,7 @@ static StatementResult execute_break_statement(CRB_Interpreter *inter, LocalEnvi
 /*
   continue
 */
-static StatementResult execute_continue_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+static StatementResult execute_continue_statement(DM_Interpreter *inter, LocalEnvironment *env,
                            Statement *statement)
 {
     StatementResult result;
@@ -326,7 +326,7 @@ static StatementResult execute_continue_statement(CRB_Interpreter *inter, LocalE
 /*
   执行statement
 */
-static StatementResult execute_statement(CRB_Interpreter *inter, LocalEnvironment *env,
+static StatementResult execute_statement(DM_Interpreter *inter, LocalEnvironment *env,
                   Statement *statement)
 {
     StatementResult result;

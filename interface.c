@@ -30,7 +30,7 @@ DM_Interpreter *DM_create_interpreter(void)
 
     storage = MEM_open_storage(0);
     interpreter = MEM_storage_malloc(storage,
-                                     sizeof(struct CRB_Interpreter_tag));
+                                     sizeof(struct DM_Interpreter_tag));
     interpreter->interpreter_storage = storage;
     interpreter->execute_storage = NULL;
     interpreter->variable = NULL;
@@ -47,7 +47,7 @@ DM_Interpreter *DM_create_interpreter(void)
 /*
   设置解释器
 */
-void DM_compile(CRB_Interpreter *interpreter, FILE *fp)
+void DM_compile(DM_Interpreter *interpreter, FILE *fp)
 {
     extern int yyparse(void);
     extern FILE *yyin;
@@ -82,12 +82,12 @@ void DM_interpret(DM_Interpreter *interpreter)
 /*
   释放全局变量中的string类型
 */
-static void release_global_strings(CRB_Interpreter *interpreter) {
+static void release_global_strings(DM_Interpreter *interpreter) {
     while (interpreter->variable) {
         Variable *temp = interpreter->variable;
         interpreter->variable = temp->next;
-        if (temp->value.type == CRB_STRING_VALUE) {
-          //判断是否是string类型
+        if (temp->value.type == DM_STRING_VALUE) {
+          /*判断是否是string类型*/
             dm_release_string(temp->value.u.string_value);
         }
     }
@@ -96,7 +96,7 @@ static void release_global_strings(CRB_Interpreter *interpreter) {
 /*
   回收解释器的内存
 */
-void DM_dispose_interpreter(CRB_Interpreter *interpreter)
+void DM_dispose_interpreter(DM_Interpreter *interpreter)
 {
   /*
     因为string类型比较特殊（存在引用计数）,需要单独回收

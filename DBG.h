@@ -8,7 +8,7 @@ void DBG_set(DBG_Controller controller, char *file, int line);
 void DBG_set_expression(char *expression);
 
 #ifdef DBG_NO_DEBUG
-//如果不开启debug模式，则将下面的函数全部情况
+/*如果不开启debug模式，则将下面的函数全部情况*/
 #define DBG_create_controller()         ((void)0)
 #define DBG_set_debug_level(level)      ((void)0)
 #define DBG_set_debug_write_fp(fp)      ((void)0)
@@ -17,8 +17,8 @@ void DBG_set_expression(char *expression);
 #define DBG_debug_write(arg)            ((void)0)
 
 #else /* DBG_NO_DEBUG */
-//如果开启了debug模式
-#ifdef DBG_CONTROLLER//如果定义了controller
+/*如果开启了debug模式*/
+#ifdef DBG_CONTROLLER/*如果定义了controller*/
 
 #define DBG_CURRENT_CONTROLLER  DBG_CONTROLLER
 #else /* DBG_CONTROLLER */

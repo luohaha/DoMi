@@ -18,7 +18,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "%s not found.\n", argv[1]);
         exit(1);
     }
-    interpreter = CRB_create_interpreter();
+    interpreter = DM_create_interpreter();
     DM_compile(interpreter, fp);
     DM_interpret(interpreter);
     DM_dispose_interpreter(interpreter);

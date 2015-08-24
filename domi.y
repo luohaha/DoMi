@@ -42,7 +42,7 @@
 
         LP RP LC RC SEMICOLON COMMA ASSIGN LOGICAL_AND LOGICAL_OR
 
-        EQ NE GT GE LT LE ADD SUB MUL DIV MOD TRUE_T FALSE_T GLOBAL_T
+        EQ NE GT GE LT LE ADD SUB MUL DIV MOD TRUE_T FALSE_T GLOBAL_T DOT INCREMENT DECREMENT
 
 %type   <parameter_list> parameter_list
 
@@ -348,6 +348,45 @@ unary_expression
 
         }
 
+        ;
+
+postfix_expression
+        : primary_expression
+
+        {
+
+        }
+
+        | postfix_expression LB expression RB
+
+        {
+
+        }
+
+        | postfix_expression DOT IDENTIFIER LP argument_lisp RP
+
+        {
+
+        }
+
+        | postfix_expression DOT IDENTIFIER LP RP
+
+        {
+
+        }
+
+        | postfix_expression INCREMENT
+
+        {
+
+
+        }
+
+        | postfix_expression DECREMENT
+
+        {
+
+        }
         ;
 
 primary_expression

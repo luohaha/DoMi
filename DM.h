@@ -28,4 +28,10 @@ typedef struct GlobalVariableRef_tag GlobalVariableRef;
 typedef struct LocalEnvironment_tag LocalEnvironment;
 typedef struct StringPool_tag StringPool;
 typedef struct StatementResult_tag StatementResult;
+/*
+v2
+*/
+typedef struct IndexExpression_tag IndexExpression;
+typedef struct IncrementOrDecrement_tag IncrementOrDecrement;
+typedef struct MethodCallExpression_tag MethodCallExpression;
 #endif/*#ifndef DM_H*/

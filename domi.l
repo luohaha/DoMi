@@ -93,7 +93,11 @@ static void increment_line_number(void)
 
 <INITIAL>"<="           return LE;
 
+<INITIAL>"++"           return INCREMENT;
+
 <INITIAL>"+"            return ADD;
+
+<INITIAL>"--"           return DECREMENT;
 
 <INITIAL>"-"            return SUB;
 
@@ -102,6 +106,12 @@ static void increment_line_number(void)
 <INITIAL>"/"            return DIV;
 
 <INITIAL>"%"            return MOD;
+
+<INITIAL>"."            return DOT;
+
+<INITIAL>"["            return LB;
+
+<INITIAL>"]"            return RB;
 
 <INITIAL>[A-Za-z_][A-Za-z_0-9]* {
 

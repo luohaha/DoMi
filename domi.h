@@ -115,6 +115,8 @@ struct DM_Interpreter_tag {
     FunctionDefinition  *function_list;
   /*保存具体的语句*/
     StatementList       *statement_list;
+  /*使用动态作用域*/
+  DM_LocalEnvironment *top_env;
 
     int                 current_line_number;
 };
@@ -415,6 +417,32 @@ expression的定义，表达式
 */
 
 /*
+  数组元素
+*/
+struct IndexExpression_tag {
+  /*指向表示数组的表达式*/
+  Expression *array;
+  /*数组的下标*/
+  Expression *index;
+};
+
+/*
+ 自增与自减
+*/
+struct IncrementOrDecrement_tag {
+  Expression *operand;
+};
+
+/*
+  调用函数
+*/
+struct MethodCallExpression_tag {
+  Expression *expression;
+  char *identifier;
+  ArgumentList *argument;
+};
+
+/*
 赋值运算符
 */
 struct AssignExpression_tag {
@@ -503,8 +531,9 @@ struct GlobalVariableRef_tag {
 本地变量，也叫局部变量
 */
 struct LocalEnvironment_tag {
-    Variable    *variable;
-    GlobalVariableRef   *global_variable;
+   Variable    *variable;
+   GlobalVariableRef   *global_variable;
+   struct LocalEnvironment_tag *next;
 };
 
 /*

@@ -19,6 +19,7 @@ typedef enum {
 typedef struct DM_String_tag DM_String;
 typedef struct DM_Object_tag DM_Object;
 typedef struct DM_Array_tag DM_Array;
+typedef struct Stack_tag Stack;
 /*
   object的类型
 */
@@ -50,6 +51,13 @@ struct DM_Object_tag {
   } u;
   struct DM_Object_tag *prev;
   struct DM_Object_tag *next;
+};
+
+/*
+  堆，用来保存动态分配的内存
+*/
+struct Heap_tag {
+  
 };
 
 /*
@@ -117,7 +125,15 @@ typedef struct {
 
 } DM_Value;
 
+/*
 
+*/
+
+struct Stack_tag {
+  int stack_alloc_size;
+  int stack_pointer;
+  DM_Value *stack;
+};
 /*
 自带函数
 */

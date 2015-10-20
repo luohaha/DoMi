@@ -26,7 +26,6 @@
 %token <d_number> DOUBLE;
 %token <string>   VAL_NAME;
 %token <node>  primary_exp high_expression expression;
-
 %%
 
 all:
@@ -46,12 +45,32 @@ function_expression:
     VAL_NAME SL expression SR
     {
       //函数执行操作
-      printf("%d\n", (int)$3);
+      Node *node = $3;
+      if (node->type == INTEGER) {
+	printf("%d", node->integer);
+      } else if (node->type == DOUBLE) {
+	printf("%f", node->doub);
+      }
     };
 assign_expression:
     VAL_NAME ASSIGN expression
     {
       //变量赋值操作
+      Node *node = $3;
+      VarLink *get = findVar($1);
+      if (get != null) {
+	if (node->type != get->value->type) {
+	  fprintf(stderr, "赋值时，类型不一致");
+	} else {
+	  if (node->type == INTEGER) {
+	    get->value->node->integer = node->integer;
+	  } else if (node->type == DOUBLE) {
+	    get->value->node->doub = node->doub;
+	  }
+	}
+      } else {
+	fprintf(stderr, "变量未定义：%s", $3);
+      }
     }
     |
     INTEGER_M VAL_NAME ASSIGN expression
@@ -67,7 +86,7 @@ assign_expression:
     DOUBLE_M VAL_NAME ASSIGN expression
     {
       //double变量初始化，并赋值
-      //int变量初始化,并赋值
+      
       Value *newValue = createVar($4, $2, TRUE, DOUBLE);
       VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
       newLink->value = newValue;
@@ -83,11 +102,21 @@ assign_expression:
     INTEGER_M VAL_NAME
     {
       //int初始化
+      Value *newValue = createVar(null, $2, FALSE, INTEGER);
+      VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
+      newLink->value = newValue;
+      newLink->next = head->next;
+      head->next = newLink;
     }
     |
     DOUBLE_M VAL_NAME
     {
       //double初始化
+      Value *newValue = createVar(null, $2, FALSE, DOUBLE);
+      VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
+      newLink->value = newValue;
+      newLink->next = head->next;
+      head->next = newLink;
     }
     |
     STRING_M VAL_NAME

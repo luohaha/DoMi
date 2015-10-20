@@ -1,6 +1,7 @@
 %{
   #include<stdio.h>
   #include<string.h>
+  #include "domi.h"
 
   void yyerror(const char* err) {
     fprintf(stderr, "error: %s\n", err);
@@ -20,10 +21,12 @@
   int number;
   double d_number;
   char* string;
+  Value value;
 }
 %token <number> INTEGER;
 %token <d_number> DOUBLE;
 %token <string>   VAL_NAME;
+%token <value>  primary_exp;
 
 %%
 
@@ -44,13 +47,14 @@ function_expression:
     VAL_NAME SL expression SR
     {
       //函数执行操作
+      printf("%d\n", (int)$3);
     };
 assign_expression:
     VAL_NAME ASSIGN expression
     {
       //变量赋值操作
     }
-    ｜
+    |
     INTEGER_M VAL_NAME ASSIGN expression
     {
       //int变量初始化,并赋值
@@ -70,7 +74,7 @@ assign_expression:
     {
       //int初始化
     }
-    ｜
+    |
     DOUBLE_M VAL_NAME
     {
       //double初始化
@@ -107,27 +111,7 @@ high_expression:
     }
     ;
 primary_exp:
-    double_exp
-    |
-    integer_exp
-    |
-    string_exp
-    ;
-double_exp:
     DOUBLE
-    {
-      $$ = $1;
-    }
-;
-integer_exp:
+    |
     INTEGER
-    {
-      $$ = $1;
-    }
-;
-string_exp:
-    STRING
-    {
-      $$ = $1;
-    }
-;
+    ;

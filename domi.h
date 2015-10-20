@@ -31,5 +31,14 @@ typedef struct Value_t{
   ValueType type;
 } Value;
 
+/*
+  变量的链表，把变量当作单链表来存储
+*/
+typedef struct VarLink_t {
+  Value *value;
+  VarLink *next;
+} VarLink;
+
 Value* createVar(Node *node, char *name, Boolean isGive, ValueType type);
 Node *simpleComputer(Node *node1, Node *node2, char type);
+VarLink* init_var();

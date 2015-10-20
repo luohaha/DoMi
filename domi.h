@@ -19,6 +19,7 @@ typedef struct Node_t {
   char *str;
   int   integer;
   double doub;
+  ValueType type;
 } Node;
 /*
   存储变量
@@ -31,3 +32,4 @@ typedef struct Value_t{
 } Value;
 
 Value* createVar(Node *node, char *name, Boolean isGive, ValueType type);
+Node *simpleComputer(Node *node1, Node *node2, char type);

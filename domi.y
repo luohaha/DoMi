@@ -21,12 +21,13 @@
   int number;
   double d_number;
   char* string;
-  Value value;
+  Value* value;
+  Node* node;
 }
 %token <number> INTEGER;
 %token <d_number> DOUBLE;
 %token <string>   VAL_NAME;
-%token <value>  primary_exp;
+%token <node>  primary_exp high_expression expression;
 
 %%
 
@@ -102,7 +103,9 @@ high_expression:
     |
     high_expression MUL primary_exp
     {
-      $$ = $1 * $3;
+      Node *node1 = $1;
+      Node *node2 = $2;
+      
     }
     |
     high_expression DIV primary_exp
@@ -112,6 +115,16 @@ high_expression:
     ;
 primary_exp:
     DOUBLE
+    {
+      Node *node = (Node*)malloc(sizeof(Node));
+      (*node).doub = $1;
+      $$ = node;
+    }
     |
     INTEGER
+    {
+      Node *node = (Node*)malloc(sizeof(Node));
+      (*node).integer = $1;
+      $$ = node;
+    }
     ;

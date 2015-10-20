@@ -20,12 +20,14 @@ typedef struct Node_t {
   int   integer;
   double doub;
 } Node;
-
 /*
-  数据的节点
+  存储变量
 */
 typedef struct Value_t{
+  char *varname;
   Node *node;
   Boolean  isGivedValue;
   ValueType type;
 } Value;
+
+Value* createVar(Node *node, char *name, Boolean isGive, ValueType type);

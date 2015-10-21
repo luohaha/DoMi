@@ -39,8 +39,20 @@ typedef struct VarLink_t {
   struct VarLink_t *next;
 } VarLink;
 
+/*
+  实际参数的链表
+*/
+typedef struct ArgumentList_t{
+  Node *node;
+  struct ArgumentList_t *next;
+} ArgumentList;
+
 extern VarLink *head;
 
 Value* createVar(Node *node, char *name, Boolean isGive, ValueType type);
 Node *simpleComputer(Node *node1, Node *node2, char type);
 VarLink* init_var();
+ArgumentList *createArgumentList(Node *head);
+void insertIntoArgumentList(ArgumentList *head, Node *node);
+void local_func(char *varname, ArgumentList *head);
+VarLink *findVar(char *name);

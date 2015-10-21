@@ -6,7 +6,7 @@
   extern VarLink *head;
   extern char* yytext;
   extern int yylineno;
-  int yydebug = 1;
+  //int yydebug = 1;
   void yyerror(const char* err) {
     fprintf(stderr, "line: %d   error: %s   before:%s\n", yylineno, err, yytext);
   }
@@ -21,21 +21,26 @@
   char* string;
   struct Value_t* value;
   struct Node_t* node;
+  struct ArgumentList_t *argument_list;
 }
-%token ADD SUB MUL DIV EQUAL ASSIGN SEMICOLON BL BR SL SR QUOT INTEGER_M DOUBLE_M STRING_M
+%token ADD SUB MUL DIV EQUAL ASSIGN SEMICOLON BL BR SL SR QUOT INTEGER_M DOUBLE_M STRING_M COMMA
 %token <number> INTEGER;
 %token <d_number> DOUBLE;
 %token <string>   VAL_NAME;
-%type <node>  primary_exp high_expression expression;
+%type <node> primary_exp high_expression expression argument;
+%type <argument_list> argument_list;
 %%
 
 all:
     sentence
     |
-    all
+    all sentence
     ;
+
 sentence:
     eval SEMICOLON
+    |
+    sentence
     ;
 eval:
     assign_expression
@@ -43,14 +48,12 @@ eval:
     function_expression
     ;
 function_expression:
-    VAL_NAME SL expression SR
+    VAL_NAME SL argument_list SR
     {
       //函数执行操作
       Node *node = $3;
-      if (node->type == INTEGER_TYPE) {
-	printf("%d", node->integer);
-      } else if (node->type == DOUBLE_TYPE) {
-	printf("%f", node->doub);
+      if (strcmp($1, "print")==0) {
+	print(node);
       }
     };
 assign_expression:
@@ -124,6 +127,33 @@ assign_expression:
     {
       //string初始化
     };
+argument:
+    expression
+    |
+    VAR_NAME
+    {
+      Node *node;
+      VarLink *link = (VarLink*)findVar($1);
+      if (link == null) {
+	fprintf(stderr, "找不到变量\n");
+	node = NULL;
+      } else {
+	node = link->value->node;
+      }
+      $$ = node;
+    }
+    ;
+argument_list:
+    argument
+    {
+      $$ = createArgumentList($1);
+    }
+    |
+    argument_list COMMA argument
+    {
+      insertIntoArgumentList($1, $3);
+    }
+    ;
 expression:
     high_expression
     |

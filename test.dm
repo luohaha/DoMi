@@ -1,3 +1,3 @@
 int a = 1;
-int b = 1;
-print(a);
+a = 2;
+out(a);

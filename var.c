@@ -5,13 +5,13 @@
 */
 extern VarLink *head;
 VarLink *findVar(char *name) {
-  VarLink *p = head;
+  VarLink *p = head->next;
   while (p != NULL) {
     if (strcmp(p->value->varname, name) == 0) {
       //相等
       return p;
     }
-    p++;
+    p = p->next;
   }
   //未找到
   return NULL;

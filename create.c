@@ -26,7 +26,7 @@ ArgumentList *createArgumentList(Node *head) {
   在实际参数链表中插入新的
 */
 void insertIntoArgumentList(ArgumentList *head, Node *node) {
-  if (head == null) {
+  if (head == NULL) {
     fprintf(stderr, "实际参数链表不存在\n");
     return;
   }

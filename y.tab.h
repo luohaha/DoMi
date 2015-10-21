@@ -54,9 +54,10 @@
      INTEGER_M = 270,
      DOUBLE_M = 271,
      STRING_M = 272,
-     INTEGER = 273,
-     DOUBLE = 274,
-     VAL_NAME = 275
+     COMMA = 273,
+     INTEGER = 274,
+     DOUBLE = 275,
+     VAL_NAME = 276
    };
 #endif
 /* Tokens.  */
@@ -75,9 +76,10 @@
 #define INTEGER_M 270
 #define DOUBLE_M 271
 #define STRING_M 272
-#define INTEGER 273
-#define DOUBLE 274
-#define VAL_NAME 275
+#define COMMA 273
+#define INTEGER 274
+#define DOUBLE 275
+#define VAL_NAME 276
 
 
 
@@ -91,9 +93,10 @@ typedef union YYSTYPE
   char* string;
   struct Value_t* value;
   struct Node_t* node;
+  struct ArgumentList_t *argument_list;
 }
 /* Line 1529 of yacc.c.  */
-#line 97 "y.tab.h"
+#line 100 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

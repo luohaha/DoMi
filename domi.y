@@ -51,10 +51,7 @@ function_expression:
     VAL_NAME SL argument_list SR
     {
       //函数执行操作
-      Node *node = $3;
-      if (strcmp($1, "print")==0) {
-	print(node);
-      }
+      local_func($1, $3);
     };
 assign_expression:
     VAL_NAME ASSIGN expression
@@ -130,11 +127,11 @@ assign_expression:
 argument:
     expression
     |
-    VAR_NAME
+    VAL_NAME
     {
       Node *node;
       VarLink *link = (VarLink*)findVar($1);
-      if (link == null) {
+      if (link == NULL) {
 	fprintf(stderr, "找不到变量\n");
 	node = NULL;
       } else {

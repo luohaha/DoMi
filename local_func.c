@@ -10,7 +10,7 @@
 /*
   打印函数
 */
-void print(Node *node) {
+void out(Node *node) {
   if (node->type == INTEGER_TYPE) {
     printf("%d\n", node->integer);
   } else if (node->type == DOUBLE_TYPE) {
@@ -21,7 +21,9 @@ void print(Node *node) {
 }
 
 void local_func(char *varname, ArgumentList *head) {
-  if (strcmp(varname, "print") == 0) {
-    print(head->node);
+  if (strcmp(varname, "out") == 0) {
+    out(head->node);
+  } else {
+    fprintf(stderr, "函数不存在\n");
   }
 }

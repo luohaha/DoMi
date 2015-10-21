@@ -125,8 +125,6 @@ assign_expression:
       //string初始化
     };
 argument:
-    expression
-    |
     VAL_NAME
     {
       Node *node;
@@ -141,12 +139,12 @@ argument:
     }
     ;
 argument_list:
-    argument
+    expression
     {
       $$ = createArgumentList($1);
     }
     |
-    argument_list COMMA argument
+    argument_list COMMA expression
     {
       insertIntoArgumentList($1, $3);
     }
@@ -205,4 +203,6 @@ primary_exp:
       (*node).type = INTEGER_TYPE;
       $$ = node;
     }
+    |
+    argument
     ;

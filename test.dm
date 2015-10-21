@@ -1,3 +1,4 @@
 int a = 1;
 a = 2;
-out(a);
+int b = 3;
+out(a*b+2);

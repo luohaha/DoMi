@@ -84,7 +84,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 16 "domi.y"
+#line 18 "domi.y"
 {
   int number;
   double d_number;

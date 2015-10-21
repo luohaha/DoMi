@@ -1,0 +1,452 @@
+Terminals which are not used
+
+   EQUAL
+   BL
+   BR
+   QUOT
+
+
+Rules never reduced
+
+    2 all: all
+
+
+State 5 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: all $end
+
+    1 all: sentence
+    2    | all
+
+    3 sentence: eval SEMICOLON
+
+    4 eval: assign_expression
+    5     | function_expression
+
+    6 function_expression: VAL_NAME SL expression SR
+
+    7 assign_expression: VAL_NAME ASSIGN expression
+    8                  | INTEGER_M VAL_NAME ASSIGN expression
+    9                  | DOUBLE_M VAL_NAME ASSIGN expression
+   10                  | STRING_M VAL_NAME ASSIGN expression
+   11                  | INTEGER_M VAL_NAME
+   12                  | DOUBLE_M VAL_NAME
+   13                  | STRING_M VAL_NAME
+
+   14 expression: high_expression
+   15           | expression ADD primary_exp
+   16           | expression SUB primary_exp
+
+   17 high_expression: primary_exp
+   18                | high_expression MUL primary_exp
+   19                | high_expression DIV primary_exp
+
+   20 primary_exp: DOUBLE
+   21            | INTEGER
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+ADD (258) 15
+SUB (259) 16
+MUL (260) 18
+DIV (261) 19
+EQUAL (262)
+ASSIGN (263) 7 8 9 10
+SEMICOLON (264) 3
+BL (265)
+BR (266)
+SL (267) 6
+SR (268) 6
+QUOT (269)
+INTEGER_M (270) 8 11
+DOUBLE_M (271) 9 12
+STRING_M (272) 10 13
+INTEGER (273) 21
+DOUBLE (274) 20
+VAL_NAME (275) 6 7 8 9 10 11 12 13
+
+
+Nonterminals, with rules where they appear
+
+$accept (21)
+    on left: 0
+all (22)
+    on left: 1 2, on right: 0 2
+sentence (23)
+    on left: 3, on right: 1
+eval (24)
+    on left: 4 5, on right: 3
+function_expression (25)
+    on left: 6, on right: 5
+assign_expression (26)
+    on left: 7 8 9 10 11 12 13, on right: 4
+expression (27)
+    on left: 14 15 16, on right: 6 7 8 9 10 15 16
+high_expression (28)
+    on left: 17 18 19, on right: 14 18 19
+primary_exp (29)
+    on left: 20 21, on right: 15 16 17 18 19
+
+
+state 0
+
+    0 $accept: . all $end
+
+    INTEGER_M  shift, and go to state 1
+    DOUBLE_M   shift, and go to state 2
+    STRING_M   shift, and go to state 3
+    VAL_NAME   shift, and go to state 4
+
+    all                  go to state 5
+    sentence             go to state 6
+    eval                 go to state 7
+    function_expression  go to state 8
+    assign_expression    go to state 9
+
+
+state 1
+
+    8 assign_expression: INTEGER_M . VAL_NAME ASSIGN expression
+   11                  | INTEGER_M . VAL_NAME
+
+    VAL_NAME  shift, and go to state 10
+
+
+state 2
+
+    9 assign_expression: DOUBLE_M . VAL_NAME ASSIGN expression
+   12                  | DOUBLE_M . VAL_NAME
+
+    VAL_NAME  shift, and go to state 11
+
+
+state 3
+
+   10 assign_expression: STRING_M . VAL_NAME ASSIGN expression
+   13                  | STRING_M . VAL_NAME
+
+    VAL_NAME  shift, and go to state 12
+
+
+state 4
+
+    6 function_expression: VAL_NAME . SL expression SR
+    7 assign_expression: VAL_NAME . ASSIGN expression
+
+    ASSIGN  shift, and go to state 13
+    SL      shift, and go to state 14
+
+
+state 5
+
+    0 $accept: all . $end
+    2 all: all .
+
+    $end  shift, and go to state 15
+
+    $end  [reduce using rule 2 (all)]
+
+
+state 6
+
+    1 all: sentence .
+
+    $default  reduce using rule 1 (all)
+
+
+state 7
+
+    3 sentence: eval . SEMICOLON
+
+    SEMICOLON  shift, and go to state 16
+
+
+state 8
+
+    5 eval: function_expression .
+
+    $default  reduce using rule 5 (eval)
+
+
+state 9
+
+    4 eval: assign_expression .
+
+    $default  reduce using rule 4 (eval)
+
+
+state 10
+
+    8 assign_expression: INTEGER_M VAL_NAME . ASSIGN expression
+   11                  | INTEGER_M VAL_NAME .
+
+    ASSIGN  shift, and go to state 17
+
+    $default  reduce using rule 11 (assign_expression)
+
+
+state 11
+
+    9 assign_expression: DOUBLE_M VAL_NAME . ASSIGN expression
+   12                  | DOUBLE_M VAL_NAME .
+
+    ASSIGN  shift, and go to state 18
+
+    $default  reduce using rule 12 (assign_expression)
+
+
+state 12
+
+   10 assign_expression: STRING_M VAL_NAME . ASSIGN expression
+   13                  | STRING_M VAL_NAME .
+
+    ASSIGN  shift, and go to state 19
+
+    $default  reduce using rule 13 (assign_expression)
+
+
+state 13
+
+    7 assign_expression: VAL_NAME ASSIGN . expression
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    expression       go to state 22
+    high_expression  go to state 23
+    primary_exp      go to state 24
+
+
+state 14
+
+    6 function_expression: VAL_NAME SL . expression SR
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    expression       go to state 25
+    high_expression  go to state 23
+    primary_exp      go to state 24
+
+
+state 15
+
+    0 $accept: all $end .
+
+    $default  accept
+
+
+state 16
+
+    3 sentence: eval SEMICOLON .
+
+    $default  reduce using rule 3 (sentence)
+
+
+state 17
+
+    8 assign_expression: INTEGER_M VAL_NAME ASSIGN . expression
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    expression       go to state 26
+    high_expression  go to state 23
+    primary_exp      go to state 24
+
+
+state 18
+
+    9 assign_expression: DOUBLE_M VAL_NAME ASSIGN . expression
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    expression       go to state 27
+    high_expression  go to state 23
+    primary_exp      go to state 24
+
+
+state 19
+
+   10 assign_expression: STRING_M VAL_NAME ASSIGN . expression
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    expression       go to state 28
+    high_expression  go to state 23
+    primary_exp      go to state 24
+
+
+state 20
+
+   21 primary_exp: INTEGER .
+
+    $default  reduce using rule 21 (primary_exp)
+
+
+state 21
+
+   20 primary_exp: DOUBLE .
+
+    $default  reduce using rule 20 (primary_exp)
+
+
+state 22
+
+    7 assign_expression: VAL_NAME ASSIGN expression .
+   15 expression: expression . ADD primary_exp
+   16           | expression . SUB primary_exp
+
+    ADD  shift, and go to state 29
+    SUB  shift, and go to state 30
+
+    $default  reduce using rule 7 (assign_expression)
+
+
+state 23
+
+   14 expression: high_expression .
+   18 high_expression: high_expression . MUL primary_exp
+   19                | high_expression . DIV primary_exp
+
+    MUL  shift, and go to state 31
+    DIV  shift, and go to state 32
+
+    $default  reduce using rule 14 (expression)
+
+
+state 24
+
+   17 high_expression: primary_exp .
+
+    $default  reduce using rule 17 (high_expression)
+
+
+state 25
+
+    6 function_expression: VAL_NAME SL expression . SR
+   15 expression: expression . ADD primary_exp
+   16           | expression . SUB primary_exp
+
+    ADD  shift, and go to state 29
+    SUB  shift, and go to state 30
+    SR   shift, and go to state 33
+
+
+state 26
+
+    8 assign_expression: INTEGER_M VAL_NAME ASSIGN expression .
+   15 expression: expression . ADD primary_exp
+   16           | expression . SUB primary_exp
+
+    ADD  shift, and go to state 29
+    SUB  shift, and go to state 30
+
+    $default  reduce using rule 8 (assign_expression)
+
+
+state 27
+
+    9 assign_expression: DOUBLE_M VAL_NAME ASSIGN expression .
+   15 expression: expression . ADD primary_exp
+   16           | expression . SUB primary_exp
+
+    ADD  shift, and go to state 29
+    SUB  shift, and go to state 30
+
+    $default  reduce using rule 9 (assign_expression)
+
+
+state 28
+
+   10 assign_expression: STRING_M VAL_NAME ASSIGN expression .
+   15 expression: expression . ADD primary_exp
+   16           | expression . SUB primary_exp
+
+    ADD  shift, and go to state 29
+    SUB  shift, and go to state 30
+
+    $default  reduce using rule 10 (assign_expression)
+
+
+state 29
+
+   15 expression: expression ADD . primary_exp
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    primary_exp  go to state 34
+
+
+state 30
+
+   16 expression: expression SUB . primary_exp
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    primary_exp  go to state 35
+
+
+state 31
+
+   18 high_expression: high_expression MUL . primary_exp
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    primary_exp  go to state 36
+
+
+state 32
+
+   19 high_expression: high_expression DIV . primary_exp
+
+    INTEGER  shift, and go to state 20
+    DOUBLE   shift, and go to state 21
+
+    primary_exp  go to state 37
+
+
+state 33
+
+    6 function_expression: VAL_NAME SL expression SR .
+
+    $default  reduce using rule 6 (function_expression)
+
+
+state 34
+
+   15 expression: expression ADD primary_exp .
+
+    $default  reduce using rule 15 (expression)
+
+
+state 35
+
+   16 expression: expression SUB primary_exp .
+
+    $default  reduce using rule 16 (expression)
+
+
+state 36
+
+   18 high_expression: high_expression MUL primary_exp .
+
+    $default  reduce using rule 18 (high_expression)
+
+
+state 37
+
+   19 high_expression: high_expression DIV primary_exp .
+
+    $default  reduce using rule 19 (high_expression)

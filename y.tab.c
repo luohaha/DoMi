@@ -117,9 +117,11 @@
   #include "domi.h"
 
   extern VarLink *head;
+  extern char* yytext;
+  extern int yylineno;
   int yydebug = 1;
   void yyerror(const char* err) {
-    fprintf(stderr, "error: %s\n", err);
+    fprintf(stderr, "line: %d   error: %s   before:%s\n", yylineno, err, yytext);
   }
   
   int yywrap() {
@@ -129,7 +131,7 @@
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 
 /* Enabling verbose error messages.  */
@@ -147,7 +149,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 16 "domi.y"
+#line 18 "domi.y"
 {
   int number;
   double d_number;
@@ -156,7 +158,7 @@ typedef union YYSTYPE
   struct Node_t* node;
 }
 /* Line 193 of yacc.c.  */
-#line 160 "y.tab.c"
+#line 162 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -169,7 +171,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 173 "y.tab.c"
+#line 175 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -461,9 +463,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    31,    31,    33,    36,    39,    41,    44,    55,    75,
-      85,    96,   101,   111,   121,   126,   128,   136,   145,   147,
-     155,   164,   172
+       0,    33,    33,    35,    38,    41,    43,    46,    57,    77,
+      87,    98,   103,   113,   123,   128,   130,   138,   147,   149,
+     157,   166,   174
 };
 #endif
 
@@ -1384,7 +1386,7 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 45 "domi.y"
+#line 47 "domi.y"
     {
       //函数执行操作
       Node *node = (yyvsp[(3) - (4)].node);
@@ -1397,7 +1399,7 @@ yyreduce:
     break;
 
   case 8:
-#line 56 "domi.y"
+#line 58 "domi.y"
     {
       //变量赋值操作
       Node *node = (yyvsp[(3) - (3)].node);
@@ -1419,7 +1421,7 @@ yyreduce:
     break;
 
   case 9:
-#line 76 "domi.y"
+#line 78 "domi.y"
     {
       //int变量初始化,并赋值
       Value *newValue = createVar((yyvsp[(4) - (4)].node), (yyvsp[(2) - (4)].string), TRUE, INTEGER_TYPE);
@@ -1431,7 +1433,7 @@ yyreduce:
     break;
 
   case 10:
-#line 86 "domi.y"
+#line 88 "domi.y"
     {
       //double变量初始化，并赋值
       
@@ -1444,14 +1446,14 @@ yyreduce:
     break;
 
   case 11:
-#line 97 "domi.y"
+#line 99 "domi.y"
     {
       //string变量初始化，并赋值
     }
     break;
 
   case 12:
-#line 102 "domi.y"
+#line 104 "domi.y"
     {
       //int初始化
       Value *newValue = createVar(NULL, (yyvsp[(2) - (2)].string), FALSE, INTEGER_TYPE);
@@ -1463,7 +1465,7 @@ yyreduce:
     break;
 
   case 13:
-#line 112 "domi.y"
+#line 114 "domi.y"
     {
       //double初始化
       Value *newValue = createVar(NULL, (yyvsp[(2) - (2)].string), FALSE, DOUBLE_TYPE);
@@ -1475,14 +1477,14 @@ yyreduce:
     break;
 
   case 14:
-#line 122 "domi.y"
+#line 124 "domi.y"
     {
       //string初始化
     }
     break;
 
   case 16:
-#line 129 "domi.y"
+#line 131 "domi.y"
     {
       Node *node1 = (yyvsp[(1) - (3)].node);
       Node *node2 = (yyvsp[(3) - (3)].node);
@@ -1492,7 +1494,7 @@ yyreduce:
     break;
 
   case 17:
-#line 137 "domi.y"
+#line 139 "domi.y"
     {
       Node *node1 = (yyvsp[(1) - (3)].node);
       Node *node2 = (yyvsp[(3) - (3)].node);
@@ -1502,7 +1504,7 @@ yyreduce:
     break;
 
   case 19:
-#line 148 "domi.y"
+#line 150 "domi.y"
     {
       Node *node1 = (yyvsp[(1) - (3)].node);
       Node *node2 = (yyvsp[(3) - (3)].node);
@@ -1512,7 +1514,7 @@ yyreduce:
     break;
 
   case 20:
-#line 156 "domi.y"
+#line 158 "domi.y"
     {
       Node *node1 = (yyvsp[(1) - (3)].node);
       Node *node2 = (yyvsp[(3) - (3)].node);
@@ -1522,7 +1524,7 @@ yyreduce:
     break;
 
   case 21:
-#line 165 "domi.y"
+#line 167 "domi.y"
     {
       Node *node = (Node*)malloc(sizeof(Node));
       (*node).doub = (yyvsp[(1) - (1)].d_number);
@@ -1532,7 +1534,7 @@ yyreduce:
     break;
 
   case 22:
-#line 173 "domi.y"
+#line 175 "domi.y"
     {
       Node *node = (Node*)malloc(sizeof(Node));
       (*node).integer = (yyvsp[(1) - (1)].number);
@@ -1543,7 +1545,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1547 "y.tab.c"
+#line 1549 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

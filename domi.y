@@ -4,9 +4,11 @@
   #include "domi.h"
 
   extern VarLink *head;
+  extern char* yytext;
+  extern int yylineno;
   int yydebug = 1;
   void yyerror(const char* err) {
-    fprintf(stderr, "error: %s\n", err);
+    fprintf(stderr, "line: %d   error: %s   before:%s\n", yylineno, err, yytext);
   }
   
   int yywrap() {

@@ -6,7 +6,7 @@
 extern VarLink *head;
 VarLink *findVar(char *name) {
   VarLink *p = head;
-  while (p != null) {
+  while (p != NULL) {
     if (strcmp(p->value->varname, name) == 0) {
       //相等
       return p;
@@ -14,5 +14,5 @@ VarLink *findVar(char *name) {
     p++;
   }
   //未找到
-  return null;
+  return NULL;
 }

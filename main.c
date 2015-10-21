@@ -4,13 +4,13 @@
   author : Yixin Luo
   主函数
 */
-
+VarLink *head;
 void main(int argc, char **argv) {
   FILE *fp;
   extern int yyparse(void);
   extern FILE *yyin;
   //获取全局变量链表的头部
-  VarLink *head = init_var();
+  head = init_var();
   /*
     读取文件
    */

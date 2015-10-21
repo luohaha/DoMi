@@ -5,7 +5,7 @@
 */
 VarLink* init_var() {
   VarLink* head = (VarLink*) malloc(sizeof(VarLink));
-  head->next = null;
-  head->value = null;
+  head->next = NULL;
+  head->value = NULL;
   return head;
 }

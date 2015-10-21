@@ -7,7 +7,7 @@ Value* createVar(Node *node, char *name, Boolean isGive, ValueType type) {
   Value *newValue = (Value*) malloc(sizeof(Value));
   
   (*newValue).isGivedValue = isGive;
-  (*newValue).node = newNode;
+  (*newValue).node = node;
   (*newValue).type = type;
   (*newValue).varname = name;
   return newValue;

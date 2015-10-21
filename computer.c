@@ -6,17 +6,17 @@
   返回值为－1，出错！！！
 */
 int computerType(Node *node1, Node *node2) {
-  if ((*node1).type == INTEGER && (*node2).type == DOUBLE) {
-    node1->type = DOUBLE;
+  if ((*node1).type == INTEGER_TYPE && (*node2).type == DOUBLE_TYPE) {
+    node1->type = DOUBLE_TYPE;
     node1->doub = (double)node1->integer;
     return 1;
-  } else if ((*node1).type == DOUBLE && (*node2).type == INTEGER) {
-    node2->type = DOUBLE;
+  } else if ((*node1).type == DOUBLE_TYPE && (*node2).type == INTEGER_TYPE) {
+    node2->type = DOUBLE_TYPE;
     node2->doub = (double)node2->integer;
     return 1;
-  } else if ((*node1).type == INTEGER && (*node2).type == INTEGER) {
+  } else if ((*node1).type == INTEGER_TYPE && (*node2).type == INTEGER_TYPE) {
     return 0;
-  } else if ((*node1).type == DOUBLE && (*node2).type == DOUBLE) {
+  } else if ((*node1).type == DOUBLE_TYPE && (*node2).type == DOUBLE_TYPE) {
     return 1;
   } else {
     fprintf(stderr, "数据类型不适合此运算!\n");
@@ -28,34 +28,34 @@ Node *simpleComputer(Node *node1, Node *node2, char type) {
   Node *newNode = (Node*) malloc(sizeof(Node));
   if (type == '+') {
     if (computerType(node1, node2) == 0) {
-      newNode->type = INTEGER;
+      newNode->type = INTEGER_TYPE;
       newNode->integer = node1->integer + node2->integer;
     } else if (computerType(node1, node2) == 1) {
-      newNode->type = DOUBLE;
+      newNode->type = DOUBLE_TYPE;
       newNode->doub = node1->doub + node2->doub;
     }
   } else if (type == '-') {
     if (computerType(node1, node2) == 0) {
-      newNode->type = INTEGER;
-      newNode->integer = node1->integer － node2->integer;
+      newNode->type = INTEGER_TYPE;
+      newNode->integer = node1->integer - node2->integer;
     } else if (computerType(node1, node2) == 1) {
-      newNode->type = DOUBLE;
-      newNode->doub = node1->doub － node2->doub;
+      newNode->type = DOUBLE_TYPE;
+      newNode->doub = node1->doub - node2->doub;
     }
   } else if (type == '*') {
     if (computerType(node1, node2) == 0) {
-      newNode->type = INTEGER;
+      newNode->type = INTEGER_TYPE;
       newNode->integer = node1->integer * node2->integer;
     } else if (computerType(node1, node2) == 1) {
-      newNode->type = DOUBLE;
+      newNode->type = DOUBLE_TYPE;
       newNode->doub = node1->doub * node2->doub;
     }
   } else if (type == '/') {
     if (computerType(node1, node2) == 0) {
-      newNode->type = INTEGER;
+      newNode->type = INTEGER_TYPE;
       newNode->integer = node1->integer / node2->integer;
     } else if (computerType(node1, node2) == 1) {
-      newNode->type = DOUBLE;
+      newNode->type = DOUBLE_TYPE;
       newNode->doub = node1->doub / node2->doub;
     }
   } else {

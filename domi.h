@@ -1,16 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 
- enum Boolean {
+typedef enum Boolean_e {
    TRUE = 1,
    FALSE = 0
- };
+ } Boolean;
 
-enum ValueType {
-  STRING = 1,
-  INTEGER = 2,
-  DOUBLE = 3
-}
+typedef enum ValueType_e {
+  STRING_TYPE = 1,
+  INTEGER_TYPE = 2,
+  DOUBLE_TYPE = 3
+}ValueType;
 
 /*
   存储数据的真实值
@@ -36,8 +36,10 @@ typedef struct Value_t{
 */
 typedef struct VarLink_t {
   Value *value;
-  VarLink *next;
+  struct VarLink_t *next;
 } VarLink;
+
+extern VarLink *head;
 
 Value* createVar(Node *node, char *name, Boolean isGive, ValueType type);
 Node *simpleComputer(Node *node1, Node *node2, char type);

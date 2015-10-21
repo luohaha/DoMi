@@ -23,8 +23,8 @@
 "string"     return STRING_M;
 
 [1-9][0-9]*  yylval.number = atoi(yytext);return INTEGER;
-(0\.[0-9]+)|([1-9][0-9]*\.[0-9]+)   yylval.d_number = strtod(yytext); return DOUBLE;
+(0\.[0-9]+)|([1-9][0-9]*\.[0-9]+)   yylval.d_number = strtod(yytext, NULL); return DOUBLE;
 [_a-zA-Z][_a-zA-Z0-9]+        yylval.string = strdup(yytext);return VAL_NAME;
-"\n"         ;
-[ \t]        ;
+\n          ;
+[ \t]+      ; 
 %%

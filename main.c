@@ -4,13 +4,15 @@
   author : Yixin Luo
   主函数
 */
-VarLink *head;
-void main(int argc, char **argv) {
+Manager *manager;
+int main(int argc, char **argv) {
   FILE *fp;
   extern int yyparse(void);
   extern FILE *yyin;
   //获取全局变量链表的头部
-  head = init_var();
+  manager = (Manager*)malloc(sizeof(Manager));
+  manager->varhead = init_var();
+  manager->baghead = init_bag();
   /*
     读取文件
    */
@@ -29,5 +31,7 @@ void main(int argc, char **argv) {
     fprintf(stderr, "parsing err!\n");
     exit(1);
   }
-  return ;
+  exeBagLink(manager->baghead);
+  
+  return 0;
 }

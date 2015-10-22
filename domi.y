@@ -3,10 +3,11 @@
   #include<string.h>
   #include "domi.h"
 
-  extern VarLink *head;
+  //extern VarLink *head;
+  extern Manager *manager;
   extern char* yytext;
   extern int yylineno;
-  //int yydebug = 1;
+  int yydebug = 1;
   void yyerror(const char* err) {
     fprintf(stderr, "line: %d   error: %s   before:%s\n", yylineno, err, yytext);
   }
@@ -19,15 +20,14 @@
   int number;
   double d_number;
   char* string;
-  struct Value_t* value;
-  struct Node_t* node;
+  struct Bag_t *bag;
   struct ArgumentList_t *argument_list;
 }
-%token ADD SUB MUL DIV EQUAL ASSIGN SEMICOLON BL BR SL SR QUOT INTEGER_M DOUBLE_M STRING_M COMMA
+%token ADD SUB MUL DIV EQUAL ASSIGN SEMICOLON BL BR SL SR QUOT INTEGER_M DOUBLE_M STRING_M COMMA FUNCTION_M
 %token <number> INTEGER;
 %token <d_number> DOUBLE;
 %token <string>   VAL_NAME;
-%type <node> primary_exp high_expression expression argument;
+%type <bag> primary_exp high_expression expression argument assign_expression function_expression eval;
 %type <argument_list> argument_list;
 %%
 
@@ -39,6 +39,15 @@ all:
 
 sentence:
     eval SEMICOLON
+    {
+      /*加入语句链表*/
+      BagLink *newLink = (BagLink*) malloc(sizeof(BagLink));
+      newLink->bag = $1;
+      newLink->prev = manager->baghead->prev;
+      newLink->next = manager->baghead;
+      manager->baghead->prev->next = newLink;
+      manager->baghead->prev = newLink;
+    }
     |
     sentence
     ;
@@ -51,48 +60,46 @@ function_expression:
     VAL_NAME SL argument_list SR
     {
       //函数执行操作
-      local_func($1, $3);
+      //local_func($1, $3);
+      $$ = createFunctionCall($1, $3, TRUE);
     };
 assign_expression:
     VAL_NAME ASSIGN expression
     {
       //变量赋值操作
-      Node *node = $3;
       VarLink *get = (VarLink*)findVar($1);
       if (get != NULL) {
-	if (node->type != get->value->type) {
-	  fprintf(stderr, "赋值时，类型不一致");
-	} else {
-	  if (node->type == INTEGER_TYPE) {
-	    get->value->node->integer = node->integer;
-	  } else if (node->type == DOUBLE_TYPE) {
-	    get->value->node->doub = node->doub;
-	  }
-	}
+	get->value->isGivedValue = TRUE;
+	$$ = createAssigmentOp(get->value, $3);
       } else {
 	fprintf(stderr, "变量未定\n");
+	exit(1);
       }
     }
     |
     INTEGER_M VAL_NAME ASSIGN expression
     {
       //int变量初始化,并赋值
-      Value *newValue = createVar($4, $2, TRUE, INTEGER_TYPE);
+      Value *newValue = createVar($2, TRUE, INTEGER_TYPE);
       VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
       newLink->value = newValue;
-      newLink->next = head->next;
-      head->next = newLink;
+      newLink->next = manager->varhead->next;
+      manager->varhead->next = newLink;
+
+      $$ = createAssigmentOp(newValue, $4);
     }
     |
     DOUBLE_M VAL_NAME ASSIGN expression
     {
       //double变量初始化，并赋值
       
-      Value *newValue = createVar($4, $2, TRUE, DOUBLE_TYPE);
+      Value *newValue = createVar($2, TRUE, DOUBLE_TYPE);
       VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
       newLink->value = newValue;
-      newLink->next = head->next;
-      head->next = newLink;
+      newLink->next = manager->varhead->next;
+      manager->varhead->next = newLink;
+
+      $$ = createAssigmentOp(newValue, $4);
     }
     |
     STRING_M VAL_NAME ASSIGN expression
@@ -103,21 +110,21 @@ assign_expression:
     INTEGER_M VAL_NAME
     {
       //int初始化
-      Value *newValue = createVar(NULL, $2, FALSE, INTEGER_TYPE);
+      Value *newValue = createVar($2, FALSE, INTEGER_TYPE);
       VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
       newLink->value = newValue;
-      newLink->next = head->next;
-      head->next = newLink;
+      newLink->next = manager->varhead->next;
+      manager->varhead->next = newLink;
     }
     |
     DOUBLE_M VAL_NAME
     {
       //double初始化
-      Value *newValue = createVar(NULL, $2, FALSE, DOUBLE_TYPE);
+      Value *newValue = createVar($2, FALSE, DOUBLE_TYPE);
       VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
       newLink->value = newValue;
-      newLink->next = head->next;
-      head->next = newLink;
+      newLink->next = manager->varhead->next;
+      manager->varhead->next = newLink;
     }
     |
     STRING_M VAL_NAME
@@ -127,15 +134,18 @@ assign_expression:
 argument:
     VAL_NAME
     {
-      Node *node;
+      Value *value;
       VarLink *link = (VarLink*)findVar($1);
       if (link == NULL) {
 	fprintf(stderr, "找不到变量\n");
-	node = NULL;
+        exit(1);
       } else {
-	node = link->value->node;
+	value = link->value;
       }
-      $$ = node;
+      Bag *bag = (Bag*) malloc(sizeof(Bag));
+      bag->type = "value";
+      bag->value = value;
+      $$ = bag;
     }
     ;
 argument_list:
@@ -152,20 +162,14 @@ argument_list:
 expression:
     high_expression
     |
-    expression ADD primary_exp
+    expression ADD high_expression
     {
-      Node *node1 = $1;
-      Node *node2 = $3;
-      Node *newNode = (Node*)simpleComputer(node1, node2, '+');
-      $$ = newNode;
+      $$ = createBinaryOp($1, $3, '+');
     }
     |
-    expression SUB primary_exp
+    expression SUB high_expression
     {
-      Node *node1 = $1;
-      Node *node2 = $3;
-      Node *newNode = (Node*)simpleComputer(node1, node2, '-');
-      $$ = newNode;
+      $$ = createBinaryOp($1, $3, '-');
     }
     ;
 high_expression:
@@ -173,18 +177,12 @@ high_expression:
     |
     high_expression MUL primary_exp
     {
-      Node *node1 = $1;
-      Node *node2 = $3;
-      Node *newNode = (Node*)simpleComputer(node1, node2, '*');
-      $$ = newNode;
+      $$ = createBinaryOp($1, $3, '*');
     }
     |
     high_expression DIV primary_exp
     {
-      Node *node1 = $1;
-      Node *node2 = $3;
-      Node *newNode = (Node*)simpleComputer(node1, node2, '/');
-      $$ = newNode;
+      $$ = createBinaryOp($1, $3, '/');
     }
     ;
 primary_exp:
@@ -193,7 +191,10 @@ primary_exp:
       Node *node = (Node*)malloc(sizeof(Node));
       (*node).doub = $1;
       (*node).type = DOUBLE_TYPE;
-      $$ = node;
+      Bag *bag = (Bag*) malloc(sizeof(Bag));
+      bag->type = "node";
+      bag->node = node;
+      $$ = bag;
     }
     |
     INTEGER
@@ -201,7 +202,10 @@ primary_exp:
       Node *node = (Node*)malloc(sizeof(Node));
       (*node).integer = $1;
       (*node).type = INTEGER_TYPE;
-      $$ = node;
+      Bag *bag = (Bag*) malloc(sizeof(Bag));
+      bag->type = "node";
+      bag->node = node;
+      $$ = bag;
     }
     |
     argument

@@ -3,9 +3,9 @@
   author : Yixin Luo
   负责与变量相关的操作
 */
-extern VarLink *head;
+extern Manager *manager;
 VarLink *findVar(char *name) {
-  VarLink *p = head->next;
+  VarLink *p = manager->varhead->next;
   while (p != NULL) {
     if (strcmp(p->value->varname, name) == 0) {
       //相等

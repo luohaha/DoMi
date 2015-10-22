@@ -22,7 +22,8 @@ void out(Node *node) {
 
 void local_func(char *varname, ArgumentList *head) {
   if (strcmp(varname, "out") == 0) {
-    out(head->node);
+    exeTree(head->bag);
+    out(head->bag->node);
   } else {
     fprintf(stderr, "函数不存在\n");
   }

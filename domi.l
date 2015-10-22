@@ -23,6 +23,7 @@
 "int"        return INTEGER_M;
 "double"     return DOUBLE_M;
 "string"     return STRING_M;
+"func"       return FUNCTION_M;
 
 [1-9][0-9]*  yylval.number = atoi(yytext);return INTEGER;
 (0\.[0-9]+)|([1-9][0-9]*\.[0-9]+)   yylval.d_number = strtod(yytext, NULL); return DOUBLE;

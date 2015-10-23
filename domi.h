@@ -3,6 +3,7 @@
 #include<string.h>
 
 typedef struct Bag_t Bag;
+
 typedef enum Boolean_e {
    TRUE = 1,
    FALSE = 0
@@ -50,12 +51,12 @@ typedef struct ArgumentList_t{
 } ArgumentList;
 
 /*
-  二元运算的数据结构，比如＋－＊／
+  二元运算的数据结构，比如＋－＊／ == >= <= > <
 */
 typedef struct Binary_op_t {
   Bag *left;
   Bag *right;
-  char type;//运算类型,'-' '+' '*' '/' 
+  char type;//运算类型,'-' '+' '*' '/' 'e' '1' '2' 'b' 's'
 } Binary_op;
 
 typedef struct Assigment_op_t {
@@ -68,6 +69,11 @@ typedef struct Function_call_t {
   ArgumentList *list; // 指向实际参数的链表
   Boolean isLocal;
 } Function_call;
+
+typedef struct While_statement_t {
+  Bag *state;  //判断语句
+  Bag *block; //语句链表
+} While_statement;
 /*
   所有可以被连入二元树的节点类型
 */
@@ -78,6 +84,7 @@ struct Bag_t {
   Binary_op *binary_op;
   Assigment_op *assigment_op;
   Function_call *function_call;
+  While_statement *while_statement;
 };
 /*
   语句的链表
@@ -98,6 +105,7 @@ typedef struct Manager_t{
   全局变量的链表
 */
 extern Manager *manager;
+extern Manager *whileManager;
 
 Value* createVar(char *name, Boolean isGive, ValueType type);
 Node *simpleComputer(Node *node1, Node *node2, char type);
@@ -114,3 +122,6 @@ BagLink *init_bag();
 void exeBag(Bag *bag);
 void exeTree(Bag *bag);
 void exeBagLink(BagLink *head);
+void bagJoinLink(Bag *bag, BagLink *head);
+int isTrue(Bag *bag);
+BagLink *freeBagLink(BagLink *head);

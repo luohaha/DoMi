@@ -23,11 +23,11 @@
   struct Bag_t *bag;
   struct ArgumentList_t *argument_list;
 }
-%token ADD SUB MUL DIV EQUAL ASSIGN SEMICOLON BL BR SL SR QUOT INTEGER_M DOUBLE_M STRING_M COMMA FUNCTION_M
+%token ADD SUB MUL DIV EQUAL ASSIGN SEMICOLON BL BR SL SR QUOT INTEGER_M DOUBLE_M STRING_M COMMA FUNCTION_M WHILE_M BIG_EQL SMALL_EQL BIG SMALL
 %token <number> INTEGER;
 %token <d_number> DOUBLE;
 %token <string>   VAL_NAME;
-%type <bag> primary_exp high_expression expression argument assign_expression function_expression eval;
+%type <bag> primary_exp high_expression expression argument assign_expression function_expression eval compa_expression while_expression block while_sentence;
 %type <argument_list> argument_list;
 %%
 
@@ -36,17 +36,26 @@ all:
     |
     all sentence
     ;
-
+block:
+    while_sentence
+    |
+    block while_sentence
+    ;
+while_sentence:
+    eval SEMICOLON
+    {
+      /*加入控制语句的语句块block*/
+      bagJoinLink($1, whileManager->baghead);
+      $$ = whileManager->baghead->next->bag;
+    }
+    |
+    while_sentence
+    ;
 sentence:
     eval SEMICOLON
     {
       /*加入语句链表*/
-      BagLink *newLink = (BagLink*) malloc(sizeof(BagLink));
-      newLink->bag = $1;
-      newLink->prev = manager->baghead->prev;
-      newLink->next = manager->baghead;
-      manager->baghead->prev->next = newLink;
-      manager->baghead->prev = newLink;
+      bagJoinLink($1, manager->baghead);
     }
     |
     sentence
@@ -55,6 +64,21 @@ eval:
     assign_expression
     |
     function_expression
+    |
+    while_expression
+    ;
+while_expression:
+    WHILE_M SL expression SR BL block BR
+    {
+      //while语句的实现
+      While_statement *w = (While_statement*)malloc(sizeof(While_statement));
+      Bag *bag = (Bag*)malloc(sizeof(Bag));
+      w->state = $3;
+      w->block = $6;
+      bag->type = "while_statement";
+      bag->while_statement = w;
+      $$ = bag;
+    }
     ;
 function_expression:
     VAL_NAME SL argument_list SR
@@ -173,18 +197,45 @@ expression:
     }
     ;
 high_expression:
-    primary_exp
+    compa_expression
     |
-    high_expression MUL primary_exp
+    high_expression MUL compa_expression
     {
       $$ = createBinaryOp($1, $3, '*');
     }
     |
-    high_expression DIV primary_exp
+    high_expression DIV compa_expression
     {
       $$ = createBinaryOp($1, $3, '/');
     }
     ;
+compa_expression:
+    primary_exp
+    |
+    compa_expression EQUAL primary_exp
+    {
+      $$ = createBinaryOp($1, $3, 'e');
+    }
+    |
+    compa_expression BIG_EQL primary_exp
+    {
+      $$ = createBinaryOp($1, $3, '1');
+    }
+    |
+    compa_expression SMALL_EQL primary_exp
+    {
+      $$ = createBinaryOp($1, $3, '2');
+    }
+    |
+    compa_expression BIG primary_exp
+    {
+      $$ = createBinaryOp($1, $3, 'b');
+    }
+    |
+    compa_expression SMALL primary_exp
+    {
+      $$ = createBinaryOp($1, $3, 's');
+    };
 primary_exp:
     DOUBLE
     {

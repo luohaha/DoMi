@@ -76,3 +76,15 @@ Bag *createFunctionCall(char *name, ArgumentList *list, Boolean isLocal) {
   newBag->function_call = call;
   return newBag;
 }
+/*
+  新建while语句
+*/
+Bag *creatWhileStatement(Bag *state, Bag *block) {
+  Bag *newBag = (Bag*) malloc(sizeof(Bag));
+  While_statement *w = (While_statement*) malloc(sizeof(While_statement));
+  w->state = state;
+  w->block = block;
+  newBag->type = "while_statement";
+  newBag->while_statement = w;
+  return newBag;
+}

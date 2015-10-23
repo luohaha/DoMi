@@ -1,19 +1,20 @@
 Terminals which are not used
 
-   EQUAL
-   BL
-   BR
    QUOT
    FUNCTION_M
 
 
 Rules never reduced
 
-    4 sentence: sentence
+    6 while_sentence: while_sentence
+
+    8 sentence: sentence
 
 
-State 6 conflicts: 5 reduce/reduce
-State 16 conflicts: 5 reduce/reduce
+State 7 conflicts: 6 reduce/reduce
+State 19 conflicts: 6 reduce/reduce
+State 62 conflicts: 6 reduce/reduce
+State 65 conflicts: 6 reduce/reduce
 
 
 Grammar
@@ -23,90 +24,119 @@ Grammar
     1 all: sentence
     2    | all sentence
 
-    3 sentence: eval SEMICOLON
-    4         | sentence
+    3 block: while_sentence
+    4      | block while_sentence
 
-    5 eval: assign_expression
-    6     | function_expression
+    5 while_sentence: eval SEMICOLON
+    6               | while_sentence
 
-    7 function_expression: VAL_NAME SL argument_list SR
+    7 sentence: eval SEMICOLON
+    8         | sentence
 
-    8 assign_expression: VAL_NAME ASSIGN expression
-    9                  | INTEGER_M VAL_NAME ASSIGN expression
-   10                  | DOUBLE_M VAL_NAME ASSIGN expression
-   11                  | STRING_M VAL_NAME ASSIGN expression
-   12                  | INTEGER_M VAL_NAME
-   13                  | DOUBLE_M VAL_NAME
-   14                  | STRING_M VAL_NAME
+    9 eval: assign_expression
+   10     | function_expression
+   11     | while_expression
 
-   15 argument: VAL_NAME
+   12 while_expression: WHILE_M SL expression SR BL block BR
 
-   16 argument_list: expression
-   17              | argument_list COMMA expression
+   13 function_expression: VAL_NAME SL argument_list SR
 
-   18 expression: high_expression
-   19           | expression ADD high_expression
-   20           | expression SUB high_expression
+   14 assign_expression: VAL_NAME ASSIGN expression
+   15                  | INTEGER_M VAL_NAME ASSIGN expression
+   16                  | DOUBLE_M VAL_NAME ASSIGN expression
+   17                  | STRING_M VAL_NAME ASSIGN expression
+   18                  | INTEGER_M VAL_NAME
+   19                  | DOUBLE_M VAL_NAME
+   20                  | STRING_M VAL_NAME
 
-   21 high_expression: primary_exp
-   22                | high_expression MUL primary_exp
-   23                | high_expression DIV primary_exp
+   21 argument: VAL_NAME
 
-   24 primary_exp: DOUBLE
-   25            | INTEGER
-   26            | argument
+   22 argument_list: expression
+   23              | argument_list COMMA expression
+
+   24 expression: high_expression
+   25           | expression ADD high_expression
+   26           | expression SUB high_expression
+
+   27 high_expression: compa_expression
+   28                | high_expression MUL compa_expression
+   29                | high_expression DIV compa_expression
+
+   30 compa_expression: primary_exp
+   31                 | compa_expression EQUAL primary_exp
+   32                 | compa_expression BIG_EQL primary_exp
+   33                 | compa_expression SMALL_EQL primary_exp
+   34                 | compa_expression BIG primary_exp
+   35                 | compa_expression SMALL primary_exp
+
+   36 primary_exp: DOUBLE
+   37            | INTEGER
+   38            | argument
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-ADD (258) 19
-SUB (259) 20
-MUL (260) 22
-DIV (261) 23
-EQUAL (262)
-ASSIGN (263) 8 9 10 11
-SEMICOLON (264) 3
-BL (265)
-BR (266)
-SL (267) 7
-SR (268) 7
+ADD (258) 25
+SUB (259) 26
+MUL (260) 28
+DIV (261) 29
+EQUAL (262) 31
+ASSIGN (263) 14 15 16 17
+SEMICOLON (264) 5 7
+BL (265) 12
+BR (266) 12
+SL (267) 12 13
+SR (268) 12 13
 QUOT (269)
-INTEGER_M (270) 9 12
-DOUBLE_M (271) 10 13
-STRING_M (272) 11 14
-COMMA (273) 17
+INTEGER_M (270) 15 18
+DOUBLE_M (271) 16 19
+STRING_M (272) 17 20
+COMMA (273) 23
 FUNCTION_M (274)
-INTEGER (275) 25
-DOUBLE (276) 24
-VAL_NAME (277) 7 8 9 10 11 12 13 14 15
+WHILE_M (275) 12
+BIG_EQL (276) 32
+SMALL_EQL (277) 33
+BIG (278) 34
+SMALL (279) 35
+INTEGER (280) 37
+DOUBLE (281) 36
+VAL_NAME (282) 13 14 15 16 17 18 19 20 21
 
 
 Nonterminals, with rules where they appear
 
-$accept (23)
+$accept (28)
     on left: 0
-all (24)
+all (29)
     on left: 1 2, on right: 0 2
-sentence (25)
-    on left: 3 4, on right: 1 2 4
-eval (26)
-    on left: 5 6, on right: 3
-function_expression (27)
-    on left: 7, on right: 6
-assign_expression (28)
-    on left: 8 9 10 11 12 13 14, on right: 5
-argument (29)
-    on left: 15, on right: 26
-argument_list (30)
-    on left: 16 17, on right: 7 17
-expression (31)
-    on left: 18 19 20, on right: 8 9 10 11 16 17 19 20
-high_expression (32)
-    on left: 21 22 23, on right: 18 19 20 22 23
-primary_exp (33)
-    on left: 24 25 26, on right: 21 22 23
+block (30)
+    on left: 3 4, on right: 4 12
+while_sentence (31)
+    on left: 5 6, on right: 3 4 6
+sentence (32)
+    on left: 7 8, on right: 1 2 8
+eval (33)
+    on left: 9 10 11, on right: 5 7
+while_expression (34)
+    on left: 12, on right: 11
+function_expression (35)
+    on left: 13, on right: 10
+assign_expression (36)
+    on left: 14 15 16 17 18 19 20, on right: 9
+argument (37)
+    on left: 21, on right: 38
+argument_list (38)
+    on left: 22 23, on right: 13 23
+expression (39)
+    on left: 24 25 26, on right: 12 14 15 16 17 22 23 25 26
+high_expression (40)
+    on left: 27 28 29, on right: 24 25 26 28 29
+compa_expression (41)
+    on left: 30 31 32 33 34 35, on right: 27 28 29 31 32 33 34 35
+primary_exp (42)
+    on left: 36 37 38, on right: 30 31 32 33 34 35
 
 
 state 0
@@ -116,469 +146,767 @@ state 0
     INTEGER_M  shift, and go to state 1
     DOUBLE_M   shift, and go to state 2
     STRING_M   shift, and go to state 3
-    VAL_NAME   shift, and go to state 4
+    WHILE_M    shift, and go to state 4
+    VAL_NAME   shift, and go to state 5
 
-    all                  go to state 5
-    sentence             go to state 6
-    eval                 go to state 7
-    function_expression  go to state 8
-    assign_expression    go to state 9
+    all                  go to state 6
+    sentence             go to state 7
+    eval                 go to state 8
+    while_expression     go to state 9
+    function_expression  go to state 10
+    assign_expression    go to state 11
 
 
 state 1
 
-    9 assign_expression: INTEGER_M . VAL_NAME ASSIGN expression
-   12                  | INTEGER_M . VAL_NAME
-
-    VAL_NAME  shift, and go to state 10
-
-
-state 2
-
-   10 assign_expression: DOUBLE_M . VAL_NAME ASSIGN expression
-   13                  | DOUBLE_M . VAL_NAME
-
-    VAL_NAME  shift, and go to state 11
-
-
-state 3
-
-   11 assign_expression: STRING_M . VAL_NAME ASSIGN expression
-   14                  | STRING_M . VAL_NAME
+   15 assign_expression: INTEGER_M . VAL_NAME ASSIGN expression
+   18                  | INTEGER_M . VAL_NAME
 
     VAL_NAME  shift, and go to state 12
 
 
+state 2
+
+   16 assign_expression: DOUBLE_M . VAL_NAME ASSIGN expression
+   19                  | DOUBLE_M . VAL_NAME
+
+    VAL_NAME  shift, and go to state 13
+
+
+state 3
+
+   17 assign_expression: STRING_M . VAL_NAME ASSIGN expression
+   20                  | STRING_M . VAL_NAME
+
+    VAL_NAME  shift, and go to state 14
+
+
 state 4
 
-    7 function_expression: VAL_NAME . SL argument_list SR
-    8 assign_expression: VAL_NAME . ASSIGN expression
+   12 while_expression: WHILE_M . SL expression SR BL block BR
 
-    ASSIGN  shift, and go to state 13
-    SL      shift, and go to state 14
+    SL  shift, and go to state 15
 
 
 state 5
 
-    0 $accept: all . $end
-    2 all: all . sentence
+   13 function_expression: VAL_NAME . SL argument_list SR
+   14 assign_expression: VAL_NAME . ASSIGN expression
 
-    $end       shift, and go to state 15
-    INTEGER_M  shift, and go to state 1
-    DOUBLE_M   shift, and go to state 2
-    STRING_M   shift, and go to state 3
-    VAL_NAME   shift, and go to state 4
-
-    sentence             go to state 16
-    eval                 go to state 7
-    function_expression  go to state 8
-    assign_expression    go to state 9
+    ASSIGN  shift, and go to state 16
+    SL      shift, and go to state 17
 
 
 state 6
 
-    1 all: sentence .
-    4 sentence: sentence .
+    0 $accept: all . $end
+    2 all: all . sentence
 
-    $end       reduce using rule 1 (all)
-    $end       [reduce using rule 4 (sentence)]
-    INTEGER_M  reduce using rule 1 (all)
-    INTEGER_M  [reduce using rule 4 (sentence)]
-    DOUBLE_M   reduce using rule 1 (all)
-    DOUBLE_M   [reduce using rule 4 (sentence)]
-    STRING_M   reduce using rule 1 (all)
-    STRING_M   [reduce using rule 4 (sentence)]
-    VAL_NAME   reduce using rule 1 (all)
-    VAL_NAME   [reduce using rule 4 (sentence)]
-    $default   reduce using rule 1 (all)
+    $end       shift, and go to state 18
+    INTEGER_M  shift, and go to state 1
+    DOUBLE_M   shift, and go to state 2
+    STRING_M   shift, and go to state 3
+    WHILE_M    shift, and go to state 4
+    VAL_NAME   shift, and go to state 5
+
+    sentence             go to state 19
+    eval                 go to state 8
+    while_expression     go to state 9
+    function_expression  go to state 10
+    assign_expression    go to state 11
 
 
 state 7
 
-    3 sentence: eval . SEMICOLON
+    1 all: sentence .
+    8 sentence: sentence .
 
-    SEMICOLON  shift, and go to state 17
+    $end       reduce using rule 1 (all)
+    $end       [reduce using rule 8 (sentence)]
+    INTEGER_M  reduce using rule 1 (all)
+    INTEGER_M  [reduce using rule 8 (sentence)]
+    DOUBLE_M   reduce using rule 1 (all)
+    DOUBLE_M   [reduce using rule 8 (sentence)]
+    STRING_M   reduce using rule 1 (all)
+    STRING_M   [reduce using rule 8 (sentence)]
+    WHILE_M    reduce using rule 1 (all)
+    WHILE_M    [reduce using rule 8 (sentence)]
+    VAL_NAME   reduce using rule 1 (all)
+    VAL_NAME   [reduce using rule 8 (sentence)]
+    $default   reduce using rule 1 (all)
 
 
 state 8
 
-    6 eval: function_expression .
+    7 sentence: eval . SEMICOLON
 
-    $default  reduce using rule 6 (eval)
+    SEMICOLON  shift, and go to state 20
 
 
 state 9
 
-    5 eval: assign_expression .
+   11 eval: while_expression .
 
-    $default  reduce using rule 5 (eval)
+    $default  reduce using rule 11 (eval)
 
 
 state 10
 
-    9 assign_expression: INTEGER_M VAL_NAME . ASSIGN expression
-   12                  | INTEGER_M VAL_NAME .
+   10 eval: function_expression .
 
-    ASSIGN  shift, and go to state 18
-
-    $default  reduce using rule 12 (assign_expression)
+    $default  reduce using rule 10 (eval)
 
 
 state 11
 
-   10 assign_expression: DOUBLE_M VAL_NAME . ASSIGN expression
-   13                  | DOUBLE_M VAL_NAME .
+    9 eval: assign_expression .
 
-    ASSIGN  shift, and go to state 19
-
-    $default  reduce using rule 13 (assign_expression)
+    $default  reduce using rule 9 (eval)
 
 
 state 12
 
-   11 assign_expression: STRING_M VAL_NAME . ASSIGN expression
-   14                  | STRING_M VAL_NAME .
+   15 assign_expression: INTEGER_M VAL_NAME . ASSIGN expression
+   18                  | INTEGER_M VAL_NAME .
 
-    ASSIGN  shift, and go to state 20
+    ASSIGN  shift, and go to state 21
 
-    $default  reduce using rule 14 (assign_expression)
+    $default  reduce using rule 18 (assign_expression)
 
 
 state 13
 
-    8 assign_expression: VAL_NAME ASSIGN . expression
+   16 assign_expression: DOUBLE_M VAL_NAME . ASSIGN expression
+   19                  | DOUBLE_M VAL_NAME .
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
+    ASSIGN  shift, and go to state 22
 
-    argument         go to state 24
-    expression       go to state 25
-    high_expression  go to state 26
-    primary_exp      go to state 27
+    $default  reduce using rule 19 (assign_expression)
 
 
 state 14
 
-    7 function_expression: VAL_NAME SL . argument_list SR
+   17 assign_expression: STRING_M VAL_NAME . ASSIGN expression
+   20                  | STRING_M VAL_NAME .
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
+    ASSIGN  shift, and go to state 23
 
-    argument         go to state 24
-    argument_list    go to state 28
-    expression       go to state 29
-    high_expression  go to state 26
-    primary_exp      go to state 27
+    $default  reduce using rule 20 (assign_expression)
 
 
 state 15
+
+   12 while_expression: WHILE_M SL . expression SR BL block BR
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    expression        go to state 28
+    high_expression   go to state 29
+    compa_expression  go to state 30
+    primary_exp       go to state 31
+
+
+state 16
+
+   14 assign_expression: VAL_NAME ASSIGN . expression
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    expression        go to state 32
+    high_expression   go to state 29
+    compa_expression  go to state 30
+    primary_exp       go to state 31
+
+
+state 17
+
+   13 function_expression: VAL_NAME SL . argument_list SR
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    argument_list     go to state 33
+    expression        go to state 34
+    high_expression   go to state 29
+    compa_expression  go to state 30
+    primary_exp       go to state 31
+
+
+state 18
 
     0 $accept: all $end .
 
     $default  accept
 
 
-state 16
-
-    2 all: all sentence .
-    4 sentence: sentence .
-
-    $end       reduce using rule 2 (all)
-    $end       [reduce using rule 4 (sentence)]
-    INTEGER_M  reduce using rule 2 (all)
-    INTEGER_M  [reduce using rule 4 (sentence)]
-    DOUBLE_M   reduce using rule 2 (all)
-    DOUBLE_M   [reduce using rule 4 (sentence)]
-    STRING_M   reduce using rule 2 (all)
-    STRING_M   [reduce using rule 4 (sentence)]
-    VAL_NAME   reduce using rule 2 (all)
-    VAL_NAME   [reduce using rule 4 (sentence)]
-    $default   reduce using rule 2 (all)
-
-
-state 17
-
-    3 sentence: eval SEMICOLON .
-
-    $default  reduce using rule 3 (sentence)
-
-
-state 18
-
-    9 assign_expression: INTEGER_M VAL_NAME ASSIGN . expression
-
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
-
-    argument         go to state 24
-    expression       go to state 30
-    high_expression  go to state 26
-    primary_exp      go to state 27
-
-
 state 19
 
-   10 assign_expression: DOUBLE_M VAL_NAME ASSIGN . expression
+    2 all: all sentence .
+    8 sentence: sentence .
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
-
-    argument         go to state 24
-    expression       go to state 31
-    high_expression  go to state 26
-    primary_exp      go to state 27
+    $end       reduce using rule 2 (all)
+    $end       [reduce using rule 8 (sentence)]
+    INTEGER_M  reduce using rule 2 (all)
+    INTEGER_M  [reduce using rule 8 (sentence)]
+    DOUBLE_M   reduce using rule 2 (all)
+    DOUBLE_M   [reduce using rule 8 (sentence)]
+    STRING_M   reduce using rule 2 (all)
+    STRING_M   [reduce using rule 8 (sentence)]
+    WHILE_M    reduce using rule 2 (all)
+    WHILE_M    [reduce using rule 8 (sentence)]
+    VAL_NAME   reduce using rule 2 (all)
+    VAL_NAME   [reduce using rule 8 (sentence)]
+    $default   reduce using rule 2 (all)
 
 
 state 20
 
-   11 assign_expression: STRING_M VAL_NAME ASSIGN . expression
+    7 sentence: eval SEMICOLON .
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
-
-    argument         go to state 24
-    expression       go to state 32
-    high_expression  go to state 26
-    primary_exp      go to state 27
+    $default  reduce using rule 7 (sentence)
 
 
 state 21
 
-   25 primary_exp: INTEGER .
+   15 assign_expression: INTEGER_M VAL_NAME ASSIGN . expression
 
-    $default  reduce using rule 25 (primary_exp)
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    expression        go to state 35
+    high_expression   go to state 29
+    compa_expression  go to state 30
+    primary_exp       go to state 31
 
 
 state 22
 
-   24 primary_exp: DOUBLE .
+   16 assign_expression: DOUBLE_M VAL_NAME ASSIGN . expression
 
-    $default  reduce using rule 24 (primary_exp)
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    expression        go to state 36
+    high_expression   go to state 29
+    compa_expression  go to state 30
+    primary_exp       go to state 31
 
 
 state 23
 
-   15 argument: VAL_NAME .
+   17 assign_expression: STRING_M VAL_NAME ASSIGN . expression
 
-    $default  reduce using rule 15 (argument)
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    expression        go to state 37
+    high_expression   go to state 29
+    compa_expression  go to state 30
+    primary_exp       go to state 31
 
 
 state 24
 
-   26 primary_exp: argument .
+   37 primary_exp: INTEGER .
 
-    $default  reduce using rule 26 (primary_exp)
+    $default  reduce using rule 37 (primary_exp)
 
 
 state 25
 
-    8 assign_expression: VAL_NAME ASSIGN expression .
-   19 expression: expression . ADD high_expression
-   20           | expression . SUB high_expression
+   36 primary_exp: DOUBLE .
 
-    ADD  shift, and go to state 33
-    SUB  shift, and go to state 34
-
-    $default  reduce using rule 8 (assign_expression)
+    $default  reduce using rule 36 (primary_exp)
 
 
 state 26
 
-   18 expression: high_expression .
-   22 high_expression: high_expression . MUL primary_exp
-   23                | high_expression . DIV primary_exp
+   21 argument: VAL_NAME .
 
-    MUL  shift, and go to state 35
-    DIV  shift, and go to state 36
-
-    $default  reduce using rule 18 (expression)
+    $default  reduce using rule 21 (argument)
 
 
 state 27
 
-   21 high_expression: primary_exp .
+   38 primary_exp: argument .
 
-    $default  reduce using rule 21 (high_expression)
+    $default  reduce using rule 38 (primary_exp)
 
 
 state 28
 
-    7 function_expression: VAL_NAME SL argument_list . SR
-   17 argument_list: argument_list . COMMA expression
+   12 while_expression: WHILE_M SL expression . SR BL block BR
+   25 expression: expression . ADD high_expression
+   26           | expression . SUB high_expression
 
-    SR     shift, and go to state 37
-    COMMA  shift, and go to state 38
+    ADD  shift, and go to state 38
+    SUB  shift, and go to state 39
+    SR   shift, and go to state 40
 
 
 state 29
 
-   16 argument_list: expression .
-   19 expression: expression . ADD high_expression
-   20           | expression . SUB high_expression
+   24 expression: high_expression .
+   28 high_expression: high_expression . MUL compa_expression
+   29                | high_expression . DIV compa_expression
 
-    ADD  shift, and go to state 33
-    SUB  shift, and go to state 34
+    MUL  shift, and go to state 41
+    DIV  shift, and go to state 42
 
-    $default  reduce using rule 16 (argument_list)
+    $default  reduce using rule 24 (expression)
 
 
 state 30
 
-    9 assign_expression: INTEGER_M VAL_NAME ASSIGN expression .
-   19 expression: expression . ADD high_expression
-   20           | expression . SUB high_expression
+   27 high_expression: compa_expression .
+   31 compa_expression: compa_expression . EQUAL primary_exp
+   32                 | compa_expression . BIG_EQL primary_exp
+   33                 | compa_expression . SMALL_EQL primary_exp
+   34                 | compa_expression . BIG primary_exp
+   35                 | compa_expression . SMALL primary_exp
 
-    ADD  shift, and go to state 33
-    SUB  shift, and go to state 34
+    EQUAL      shift, and go to state 43
+    BIG_EQL    shift, and go to state 44
+    SMALL_EQL  shift, and go to state 45
+    BIG        shift, and go to state 46
+    SMALL      shift, and go to state 47
 
-    $default  reduce using rule 9 (assign_expression)
+    $default  reduce using rule 27 (high_expression)
 
 
 state 31
 
-   10 assign_expression: DOUBLE_M VAL_NAME ASSIGN expression .
-   19 expression: expression . ADD high_expression
-   20           | expression . SUB high_expression
+   30 compa_expression: primary_exp .
 
-    ADD  shift, and go to state 33
-    SUB  shift, and go to state 34
-
-    $default  reduce using rule 10 (assign_expression)
+    $default  reduce using rule 30 (compa_expression)
 
 
 state 32
 
-   11 assign_expression: STRING_M VAL_NAME ASSIGN expression .
-   19 expression: expression . ADD high_expression
-   20           | expression . SUB high_expression
+   14 assign_expression: VAL_NAME ASSIGN expression .
+   25 expression: expression . ADD high_expression
+   26           | expression . SUB high_expression
 
-    ADD  shift, and go to state 33
-    SUB  shift, and go to state 34
+    ADD  shift, and go to state 38
+    SUB  shift, and go to state 39
 
-    $default  reduce using rule 11 (assign_expression)
+    $default  reduce using rule 14 (assign_expression)
 
 
 state 33
 
-   19 expression: expression ADD . high_expression
+   13 function_expression: VAL_NAME SL argument_list . SR
+   23 argument_list: argument_list . COMMA expression
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
-
-    argument         go to state 24
-    high_expression  go to state 39
-    primary_exp      go to state 27
+    SR     shift, and go to state 48
+    COMMA  shift, and go to state 49
 
 
 state 34
 
-   20 expression: expression SUB . high_expression
+   22 argument_list: expression .
+   25 expression: expression . ADD high_expression
+   26           | expression . SUB high_expression
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
+    ADD  shift, and go to state 38
+    SUB  shift, and go to state 39
 
-    argument         go to state 24
-    high_expression  go to state 40
-    primary_exp      go to state 27
+    $default  reduce using rule 22 (argument_list)
 
 
 state 35
 
-   22 high_expression: high_expression MUL . primary_exp
+   15 assign_expression: INTEGER_M VAL_NAME ASSIGN expression .
+   25 expression: expression . ADD high_expression
+   26           | expression . SUB high_expression
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
+    ADD  shift, and go to state 38
+    SUB  shift, and go to state 39
 
-    argument     go to state 24
-    primary_exp  go to state 41
+    $default  reduce using rule 15 (assign_expression)
 
 
 state 36
 
-   23 high_expression: high_expression DIV . primary_exp
+   16 assign_expression: DOUBLE_M VAL_NAME ASSIGN expression .
+   25 expression: expression . ADD high_expression
+   26           | expression . SUB high_expression
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
+    ADD  shift, and go to state 38
+    SUB  shift, and go to state 39
 
-    argument     go to state 24
-    primary_exp  go to state 42
+    $default  reduce using rule 16 (assign_expression)
 
 
 state 37
 
-    7 function_expression: VAL_NAME SL argument_list SR .
+   17 assign_expression: STRING_M VAL_NAME ASSIGN expression .
+   25 expression: expression . ADD high_expression
+   26           | expression . SUB high_expression
 
-    $default  reduce using rule 7 (function_expression)
+    ADD  shift, and go to state 38
+    SUB  shift, and go to state 39
+
+    $default  reduce using rule 17 (assign_expression)
 
 
 state 38
 
-   17 argument_list: argument_list COMMA . expression
+   25 expression: expression ADD . high_expression
 
-    INTEGER   shift, and go to state 21
-    DOUBLE    shift, and go to state 22
-    VAL_NAME  shift, and go to state 23
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
 
-    argument         go to state 24
-    expression       go to state 43
-    high_expression  go to state 26
-    primary_exp      go to state 27
+    argument          go to state 27
+    high_expression   go to state 50
+    compa_expression  go to state 30
+    primary_exp       go to state 31
 
 
 state 39
 
-   19 expression: expression ADD high_expression .
-   22 high_expression: high_expression . MUL primary_exp
-   23                | high_expression . DIV primary_exp
+   26 expression: expression SUB . high_expression
 
-    MUL  shift, and go to state 35
-    DIV  shift, and go to state 36
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
 
-    $default  reduce using rule 19 (expression)
+    argument          go to state 27
+    high_expression   go to state 51
+    compa_expression  go to state 30
+    primary_exp       go to state 31
 
 
 state 40
 
-   20 expression: expression SUB high_expression .
-   22 high_expression: high_expression . MUL primary_exp
-   23                | high_expression . DIV primary_exp
+   12 while_expression: WHILE_M SL expression SR . BL block BR
 
-    MUL  shift, and go to state 35
-    DIV  shift, and go to state 36
-
-    $default  reduce using rule 20 (expression)
+    BL  shift, and go to state 52
 
 
 state 41
 
-   22 high_expression: high_expression MUL primary_exp .
+   28 high_expression: high_expression MUL . compa_expression
 
-    $default  reduce using rule 22 (high_expression)
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    compa_expression  go to state 53
+    primary_exp       go to state 31
 
 
 state 42
 
-   23 high_expression: high_expression DIV primary_exp .
+   29 high_expression: high_expression DIV . compa_expression
 
-    $default  reduce using rule 23 (high_expression)
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    compa_expression  go to state 54
+    primary_exp       go to state 31
 
 
 state 43
 
-   17 argument_list: argument_list COMMA expression .
-   19 expression: expression . ADD high_expression
-   20           | expression . SUB high_expression
+   31 compa_expression: compa_expression EQUAL . primary_exp
 
-    ADD  shift, and go to state 33
-    SUB  shift, and go to state 34
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
 
-    $default  reduce using rule 17 (argument_list)
+    argument     go to state 27
+    primary_exp  go to state 55
+
+
+state 44
+
+   32 compa_expression: compa_expression BIG_EQL . primary_exp
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument     go to state 27
+    primary_exp  go to state 56
+
+
+state 45
+
+   33 compa_expression: compa_expression SMALL_EQL . primary_exp
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument     go to state 27
+    primary_exp  go to state 57
+
+
+state 46
+
+   34 compa_expression: compa_expression BIG . primary_exp
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument     go to state 27
+    primary_exp  go to state 58
+
+
+state 47
+
+   35 compa_expression: compa_expression SMALL . primary_exp
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument     go to state 27
+    primary_exp  go to state 59
+
+
+state 48
+
+   13 function_expression: VAL_NAME SL argument_list SR .
+
+    $default  reduce using rule 13 (function_expression)
+
+
+state 49
+
+   23 argument_list: argument_list COMMA . expression
+
+    INTEGER   shift, and go to state 24
+    DOUBLE    shift, and go to state 25
+    VAL_NAME  shift, and go to state 26
+
+    argument          go to state 27
+    expression        go to state 60
+    high_expression   go to state 29
+    compa_expression  go to state 30
+    primary_exp       go to state 31
+
+
+state 50
+
+   25 expression: expression ADD high_expression .
+   28 high_expression: high_expression . MUL compa_expression
+   29                | high_expression . DIV compa_expression
+
+    MUL  shift, and go to state 41
+    DIV  shift, and go to state 42
+
+    $default  reduce using rule 25 (expression)
+
+
+state 51
+
+   26 expression: expression SUB high_expression .
+   28 high_expression: high_expression . MUL compa_expression
+   29                | high_expression . DIV compa_expression
+
+    MUL  shift, and go to state 41
+    DIV  shift, and go to state 42
+
+    $default  reduce using rule 26 (expression)
+
+
+state 52
+
+   12 while_expression: WHILE_M SL expression SR BL . block BR
+
+    INTEGER_M  shift, and go to state 1
+    DOUBLE_M   shift, and go to state 2
+    STRING_M   shift, and go to state 3
+    WHILE_M    shift, and go to state 4
+    VAL_NAME   shift, and go to state 5
+
+    block                go to state 61
+    while_sentence       go to state 62
+    eval                 go to state 63
+    while_expression     go to state 9
+    function_expression  go to state 10
+    assign_expression    go to state 11
+
+
+state 53
+
+   28 high_expression: high_expression MUL compa_expression .
+   31 compa_expression: compa_expression . EQUAL primary_exp
+   32                 | compa_expression . BIG_EQL primary_exp
+   33                 | compa_expression . SMALL_EQL primary_exp
+   34                 | compa_expression . BIG primary_exp
+   35                 | compa_expression . SMALL primary_exp
+
+    EQUAL      shift, and go to state 43
+    BIG_EQL    shift, and go to state 44
+    SMALL_EQL  shift, and go to state 45
+    BIG        shift, and go to state 46
+    SMALL      shift, and go to state 47
+
+    $default  reduce using rule 28 (high_expression)
+
+
+state 54
+
+   29 high_expression: high_expression DIV compa_expression .
+   31 compa_expression: compa_expression . EQUAL primary_exp
+   32                 | compa_expression . BIG_EQL primary_exp
+   33                 | compa_expression . SMALL_EQL primary_exp
+   34                 | compa_expression . BIG primary_exp
+   35                 | compa_expression . SMALL primary_exp
+
+    EQUAL      shift, and go to state 43
+    BIG_EQL    shift, and go to state 44
+    SMALL_EQL  shift, and go to state 45
+    BIG        shift, and go to state 46
+    SMALL      shift, and go to state 47
+
+    $default  reduce using rule 29 (high_expression)
+
+
+state 55
+
+   31 compa_expression: compa_expression EQUAL primary_exp .
+
+    $default  reduce using rule 31 (compa_expression)
+
+
+state 56
+
+   32 compa_expression: compa_expression BIG_EQL primary_exp .
+
+    $default  reduce using rule 32 (compa_expression)
+
+
+state 57
+
+   33 compa_expression: compa_expression SMALL_EQL primary_exp .
+
+    $default  reduce using rule 33 (compa_expression)
+
+
+state 58
+
+   34 compa_expression: compa_expression BIG primary_exp .
+
+    $default  reduce using rule 34 (compa_expression)
+
+
+state 59
+
+   35 compa_expression: compa_expression SMALL primary_exp .
+
+    $default  reduce using rule 35 (compa_expression)
+
+
+state 60
+
+   23 argument_list: argument_list COMMA expression .
+   25 expression: expression . ADD high_expression
+   26           | expression . SUB high_expression
+
+    ADD  shift, and go to state 38
+    SUB  shift, and go to state 39
+
+    $default  reduce using rule 23 (argument_list)
+
+
+state 61
+
+    4 block: block . while_sentence
+   12 while_expression: WHILE_M SL expression SR BL block . BR
+
+    BR         shift, and go to state 64
+    INTEGER_M  shift, and go to state 1
+    DOUBLE_M   shift, and go to state 2
+    STRING_M   shift, and go to state 3
+    WHILE_M    shift, and go to state 4
+    VAL_NAME   shift, and go to state 5
+
+    while_sentence       go to state 65
+    eval                 go to state 63
+    while_expression     go to state 9
+    function_expression  go to state 10
+    assign_expression    go to state 11
+
+
+state 62
+
+    3 block: while_sentence .
+    6 while_sentence: while_sentence .
+
+    BR         reduce using rule 3 (block)
+    BR         [reduce using rule 6 (while_sentence)]
+    INTEGER_M  reduce using rule 3 (block)
+    INTEGER_M  [reduce using rule 6 (while_sentence)]
+    DOUBLE_M   reduce using rule 3 (block)
+    DOUBLE_M   [reduce using rule 6 (while_sentence)]
+    STRING_M   reduce using rule 3 (block)
+    STRING_M   [reduce using rule 6 (while_sentence)]
+    WHILE_M    reduce using rule 3 (block)
+    WHILE_M    [reduce using rule 6 (while_sentence)]
+    VAL_NAME   reduce using rule 3 (block)
+    VAL_NAME   [reduce using rule 6 (while_sentence)]
+    $default   reduce using rule 3 (block)
+
+
+state 63
+
+    5 while_sentence: eval . SEMICOLON
+
+    SEMICOLON  shift, and go to state 66
+
+
+state 64
+
+   12 while_expression: WHILE_M SL expression SR BL block BR .
+
+    $default  reduce using rule 12 (while_expression)
+
+
+state 65
+
+    4 block: block while_sentence .
+    6 while_sentence: while_sentence .
+
+    BR         reduce using rule 4 (block)
+    BR         [reduce using rule 6 (while_sentence)]
+    INTEGER_M  reduce using rule 4 (block)
+    INTEGER_M  [reduce using rule 6 (while_sentence)]
+    DOUBLE_M   reduce using rule 4 (block)
+    DOUBLE_M   [reduce using rule 6 (while_sentence)]
+    STRING_M   reduce using rule 4 (block)
+    STRING_M   [reduce using rule 6 (while_sentence)]
+    WHILE_M    reduce using rule 4 (block)
+    WHILE_M    [reduce using rule 6 (while_sentence)]
+    VAL_NAME   reduce using rule 4 (block)
+    VAL_NAME   [reduce using rule 6 (while_sentence)]
+    $default   reduce using rule 4 (block)
+
+
+state 66
+
+    5 while_sentence: eval SEMICOLON .
+
+    $default  reduce using rule 5 (while_sentence)

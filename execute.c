@@ -3,6 +3,15 @@
 extern Manager *manager;
 
 /*
+  执行while语句块
+*/
+void exeWhileStatement(Bag *bag) {
+  while (isTrue(bag->while_statement->state)) {
+    exeBagLink(whileManager->baghead);
+  }
+  freeBagLink(whileManager->baghead);
+}
+/*
   执行函数调用
 */
 Bag* exeFunc(Function_call *call) {
@@ -32,6 +41,9 @@ void exeBag(Bag *bag) {
       exit(1);
     }
     bag->node = bag->value->node;
+  } else if (strcmp(bag->type, "while_statement") == 0) {
+    exeWhileStatement(bag);
+    
   } else {
     fprintf(stderr, "语句类型错误\n");
     exit(1);
@@ -59,4 +71,21 @@ void exeBagLink(BagLink *head) {
     p = p->next;
   }
   return;
+}
+
+/*
+  回收语句链表
+*/
+BagLink *freeBagLink(BagLink *head) {
+  BagLink *p = head->next;
+  while (p != head) {
+    head->next = p->next;
+    head->next->prev = head;
+    if (p->bag != NULL)
+      free(p->bag);
+    if (p != NULL)
+      free(p);
+    p = head->next;
+  }
+  return head;
 }

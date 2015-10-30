@@ -11,6 +11,43 @@ Value* createVar(char *name, Boolean isGive, ValueType type) {
   newValue->type = type;
   return newValue;
 }
+/*
+  创建新的语句链表
+*/
+BagLink *createBlockExpList(Bag *bag) {
+  BagLink *newLink = (BagLink*)malloc(sizeof(BagLink));
+  newLink->bag =bag;
+  newLink->next = newLink;
+  newLink->prev = newLink;
+  return newLink;
+}
+/*
+  插入语句链表
+*/
+void insertIntoBlockExpList(BagLink *link, Bag *bag) {
+  BagLink *newLink = (BagLink*)malloc(sizeof(BagLink));
+  newLink->bag =bag;
+  
+}
+/*
+  创建新的形式参数链表
+*/
+VarLink *createStatementList(Value *value) {
+  VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
+  newLink->value = value;
+  newLink->next = NULL;
+  return newLink;
+}
+
+/*
+  在形式参数链表中插入
+*/
+void insertIntoStatementList(VarLink *link, Value *value) {
+  VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
+  newLink->value = value;
+  newLink->next = link->next;
+  link->next = newLink;
+}
 
 /*
   创建新的实际参数链表

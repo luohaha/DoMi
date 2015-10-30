@@ -20,7 +20,10 @@
   int number;
   double d_number;
   char* string;
+  struct Value_t *value;
+  struct VarLink_t *varlink;
   struct Bag_t *bag;
+  struct BagLink_t *baglink;
   struct ArgumentList_t *argument_list;
 }
 %token ADD SUB MUL DIV EQUAL ASSIGN SEMICOLON BL BR SL SR QUOT INTEGER_M DOUBLE_M STRING_M COMMA FUNCTION_M WHILE_M BIG_EQL SMALL_EQL BIG SMALL
@@ -28,7 +31,10 @@
 %token <d_number> DOUBLE;
 %token <string>   VAL_NAME;
 %type <bag> primary_exp high_expression expression argument assign_expression function_expression eval compa_expression while_expression block while_sentence;
+%type <baglink> block_exp_list;
 %type <argument_list> argument_list;
+%type <value> statement_exp;
+%type <varlink> statement_exp_list;
 %%
 
 all:
@@ -67,6 +73,48 @@ eval:
     |
     while_expression
     ;
+statement_exp:
+    INTEGER_M VAL_NAME
+    {
+      Value *value = (Value*)malloc(sizeof(Value));
+      value->varname = $2;
+      value->isGivedValue = FALSE;
+      value->type = INTEGER_TYPE;
+    }
+    |
+    DOUBLE_M VAL_NAME
+    {
+      Value *value = (Value*)malloc(sizeof(Value));
+      value->varname = $2;
+      value->isGivedValue = FALSE;
+      value->type = DOUBLE_TYPE;
+    };
+statement_exp_list:
+    statement_exp
+    {
+      $$ = createStatementList($1);
+    }
+    |
+    statement_exp_list COMMA statement_exp
+    {
+      insertIntoStatementList($1, $3);
+    };
+block_exp_list:
+    eval
+    {
+      
+    }
+    |
+    block_exp_list SEMICOLON eval
+    {
+      
+    };
+function_defun_exp:
+    FUNCTION_M SL statement_exp_list SR BL block_exp_list BR
+    {
+      //函数定义
+      
+    };
 while_expression:
     WHILE_M SL expression SR BL block BR
     {

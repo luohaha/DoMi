@@ -46,7 +46,7 @@ Bag* exeFunc(Function_call *call) {
       fprintf(stderr, "实际参数不正确\n");
       exit(-1);
     }
-    
+    exeBagLink();
   }
   return NULL;
 }

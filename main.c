@@ -6,6 +6,7 @@
 */
 Manager *manager;
 Manager *whileManager;
+ManagerLink *managerLink;
 int main(int argc, char **argv) {
   FILE *fp;
   extern int yyparse(void);
@@ -17,8 +18,15 @@ int main(int argc, char **argv) {
   manager->baghead = init_bag();
   whileManager->baghead = init_bag();
   /*
+    函数的链表定义
+   */
+  managerLink = (ManagerLink*)malloc(sizeof(ManagerLink));
+  managerLink->manager = NULL;
+  managerLink->next = NULL;
+  /*
     读取文件
    */
+  
   if(argc != 2){
     fprintf(stderr,"usage:%s filename",argv[0]);
     exit(1);

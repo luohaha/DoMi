@@ -38,7 +38,11 @@
 %%
 
 all:
+    function_defun_exp
+    |
     sentence
+    |
+    all function_defun_exp
     |
     all sentence
     ;
@@ -102,19 +106,41 @@ statement_exp_list:
 block_exp_list:
     eval
     {
-      
+      createBlockExpList($1);
     }
     |
     block_exp_list SEMICOLON eval
     {
-      
+      insertIntoBlockExpList($1, $3);
     };
+
 function_defun_exp:
-    FUNCTION_M SL statement_exp_list SR BL block_exp_list BR
+    FUNCTION_M VAL_NAME SL statement_exp_list SR BL block_exp_list BR
     {
       //函数定义
-      
-    };
+      Manager *manager = (Manager*)malloc(sizeof(Manager));
+      manager->varhead = $4;
+      manager->baghead = $7;
+      ManagerLink *link = (ManagerLink*)malloc(sizeof(ManagerLink));
+      link->manager = manager;
+      link->name = $2;
+      link->next = managerLink->next;
+      managerLink->next = link;
+    }
+    |
+    FUNCTION_M VAL_NAME SL SR BL block_exp_list BR
+    {
+      //函数定义
+      Manager *manager = (Manager*)malloc(sizeof(Manager));
+      manager->varhead = NULL;
+      manager->baghead = $6;
+      ManagerLink *link = (ManagerLink*)malloc(sizeof(ManagerLink));
+      link->manager = manager;
+      link->name = $2;
+      link->next = managerLink->next;
+      managerLink->next = link;
+    }
+    ;
 while_expression:
     WHILE_M SL expression SR BL block BR
     {
@@ -133,7 +159,24 @@ function_expression:
     {
       //函数执行操作
       //local_func($1, $3);
-      $$ = createFunctionCall($1, $3, TRUE);
+      if (strcmp($1, "print")) {
+	$$ = createFunctionCall($1, $3, TRUE);
+      } else {
+	//自定义的函数
+	$$ = createFunctionCall($1, $3, FALSE);
+      }
+    }
+    |
+    VAL_NAME SL SR
+    {
+      //函数执行操作,无参数
+      //local_func($1, $3);
+      if (strcmp($1, "print")) {
+	$$ = createFunctionCall($1, NULL, TRUE);
+      } else {
+	//自定义的函数
+	$$ = createFunctionCall($1, NULL, FALSE);
+      }
     };
 assign_expression:
     VAL_NAME ASSIGN expression

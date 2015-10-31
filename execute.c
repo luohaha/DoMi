@@ -18,7 +18,26 @@ Bag* exeFunc(Function_call *call) {
   if (call->isLocal == TRUE) {
     local_func(call->func_name, call->list);
   } else {
-    
+    //执行自定义函数
+    //首先查看是否已经定义
+    ManagerLink *p = managerLink->next;
+    while (p != NULL) {
+      if (strcmp(p->name, call->func_name) == 0) {
+	break;
+      } else
+	p = p->next;
+    }
+    if (p == NULL) {
+      //找不到
+      fprintf(stderr, "函数未定义: %s\n", call->func_name);
+      exit(-1);
+    }
+    //找到
+    ArgumentList *args = call->list;
+    while (args != NULL) {
+      exeBag(args->bag);
+      
+    }
   }
   return NULL;
 }

@@ -74,6 +74,7 @@ typedef struct While_statement_t {
   Bag *state;  //判断语句
   Bag *block; //语句链表
 } While_statement;
+
 /*
   所有可以被连入二元树的节点类型
 */
@@ -102,10 +103,19 @@ typedef struct Manager_t{
   VarLink *varhead;
 }Manager;
 /*
+  管理员链表，因为对于不同的函数定义，有不同的管理员
+*/
+typedef struct ManagerLink_t {
+  Manager *manager;
+  struct ManagerLink_t *next;
+  char *name;
+}ManagerLink;
+/*
   全局变量的链表
 */
 extern Manager *manager;
 extern Manager *whileManager;
+extern ManagerLink *managerLink;
 
 Value* createVar(char *name, Boolean isGive, ValueType type);
 Node *simpleComputer(Node *node1, Node *node2, char type);
@@ -125,3 +135,7 @@ void exeBagLink(BagLink *head);
 void bagJoinLink(Bag *bag, BagLink *head);
 int isTrue(Bag *bag);
 BagLink *freeBagLink(BagLink *head);
+BagLink *createBlockExpList(Bag *bag);
+BagLink *insertIntoBlockExpList(BagLink *link, Bag *bag);
+VarLink *createStatementList(Value *value);
+VarLink *insertIntoStatementList(VarLink *link, Value *value);

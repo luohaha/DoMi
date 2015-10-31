@@ -24,10 +24,16 @@ BagLink *createBlockExpList(Bag *bag) {
 /*
   插入语句链表
 */
-void insertIntoBlockExpList(BagLink *link, Bag *bag) {
+BagLink *insertIntoBlockExpList(BagLink *link, Bag *bag) {
   BagLink *newLink = (BagLink*)malloc(sizeof(BagLink));
-  newLink->bag =bag;
+  newLink->bag = bag;
+  newLink->prev = link->prev;
+  newLink->next = link;
   
+  newLink->next->prev = newLink;
+  link->prev->next = newLink;
+
+  return link;
 }
 /*
   创建新的形式参数链表
@@ -42,11 +48,12 @@ VarLink *createStatementList(Value *value) {
 /*
   在形式参数链表中插入
 */
-void insertIntoStatementList(VarLink *link, Value *value) {
+VarLink* insertIntoStatementList(VarLink *link, Value *value) {
   VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
   newLink->value = value;
   newLink->next = link->next;
   link->next = newLink;
+  return link;
 }
 
 /*

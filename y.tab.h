@@ -103,11 +103,14 @@ typedef union YYSTYPE
   int number;
   double d_number;
   char* string;
+  struct Value_t *value;
+  struct VarLink_t *varlink;
   struct Bag_t *bag;
+  struct BagLink_t *baglink;
   struct ArgumentList_t *argument_list;
 }
 /* Line 1529 of yacc.c.  */
-#line 111 "y.tab.h"
+#line 114 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -2,9 +2,10 @@ TARGET = domi
 CC = gcc
 OBJS = lex.yy.o y.tab.o create.o main.o init.o computer.o var.o local_func.o execute.o
 YFLAGS = --debug --verbose
+CFLAGS = -ggdb -Wall -pedantic
 #编译得到domi
 $(TARGET) : $(OBJS) domi.h
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OBJS) -o $@ $(CFLAGS)
 clean:
 	rm -f *.o lex.yy.c y.tab.c y.tab.h domi
 

@@ -46,9 +46,39 @@ Bag* exeFunc(Function_call *call) {
       fprintf(stderr, "实际参数不正确\n");
       exit(-1);
     }
-    exeBagLink();
+    exeFuncBagLink(p->manager->baghead);
   }
   return NULL;
+}
+
+/*
+  执行函数语句
+*/
+void exeFuncBag(Bag *bag, ManagerLink *p) {
+  if (strcmp(bag->type, "value")) {
+    if (bag->value->node == NULL) {
+      VarLink *link = p->manager->varhead;
+      while(link != NULL) {
+	if (strcmp(link->value->varname, bag->value->varname) == 0) {
+	  //find
+	  bag->value->node = link->value->node;
+	  break;
+	} else {
+	  link = link->next;
+	}
+      }//while
+      if (link == NULL) {
+	//not found
+	fprintf(stderr, "变量未定义 : %s\n", bag->value->varname);
+	exit(-1);
+      }
+      //found
+      bag->node = bag->value->node;
+      return;
+    }
+  } else {
+    exeBag(bag);
+  }
 }
 /*
   执行每一条语句
@@ -100,7 +130,17 @@ void exeBagLink(BagLink *head) {
   }
   return;
 }
-
+/*
+执行函数的语句链表
+*/
+void exeFuncBagLink(BagLink *head) {
+  BagLink *p = head->next;
+  while (p != head) {
+    exeFuncBag(p->bag);
+    p = p->next;
+  }
+  return;
+}
 /*
   回收语句链表
 */

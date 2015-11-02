@@ -139,5 +139,6 @@ BagLink *createBlockExpList(Bag *bag);
 BagLink *insertIntoBlockExpList(BagLink *link, Bag *bag);
 VarLink *createStatementList(Value *value);
 VarLink *insertIntoStatementList(VarLink *link, Value *value);
-void exeFuncBagLink(BagLink *head);
+void exeFuncBagLink(BagLink *head, ManagerLink *link);
 void exeFuncBag(Bag *bag, ManagerLink *p);
+void exeFuncTree(Bag *bag, ManagerLink *p);

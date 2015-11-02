@@ -46,16 +46,19 @@ Bag* exeFunc(Function_call *call) {
       fprintf(stderr, "实际参数不正确\n");
       exit(-1);
     }
-    exeFuncBagLink(p->manager->baghead);
+    exeFuncBagLink(p->manager->baghead, p);
   }
   return NULL;
 }
+
 
 /*
   执行函数语句
 */
 void exeFuncBag(Bag *bag, ManagerLink *p) {
-  if (strcmp(bag->type, "value")) {
+  printf("%s\n", bag->type);
+  if (strcmp(bag->type, "value") == 0) {
+    
     if (bag->value->node == NULL) {
       VarLink *link = p->manager->varhead;
       while(link != NULL) {
@@ -76,8 +79,14 @@ void exeFuncBag(Bag *bag, ManagerLink *p) {
       bag->node = bag->value->node;
       return;
     }
+  } else if (strcmp(bag->type, "assigment_op") == 0) {
+    exeFuncTree(bag->assigment_op->send, p);
+    bag->assigment_op->recv->node = bag->assigment_op->send->node;
+  } else if (strcmp(bag->type, "function_call") == 0) {
+    exeFuncTree(bag->function_call->list->bag, p);
+    exeFunc(bag->function_call);
   } else {
-    exeBag(bag);
+     exeBag(bag);
   }
 }
 /*
@@ -90,6 +99,7 @@ void exeBag(Bag *bag) {
     exeTree(bag->assigment_op->send);
     bag->assigment_op->recv->node = bag->assigment_op->send->node;
   } else if (strcmp(bag->type, "function_call") == 0) {
+    exeTree(bag->function_call->list->bag);
     exeFunc(bag->function_call);
   } else if (strcmp(bag->type, "node") == 0) {
 
@@ -106,6 +116,17 @@ void exeBag(Bag *bag) {
     fprintf(stderr, "语句类型错误\n");
     exit(1);
   }
+}
+/*
+  执行函数内部的语法树的解析
+*/
+void exeFuncTree(Bag *bag, ManagerLink *p) {
+  /*后续遍历*/
+  if (strcmp(bag->type, "binary_op") == 0) {
+    exeFuncTree(bag->binary_op->left, p);
+    exeFuncTree(bag->binary_op->right, p);
+  }
+  exeFuncBag(bag, p);
 }
 /*
   执行语法树的解析
@@ -133,10 +154,14 @@ void exeBagLink(BagLink *head) {
 /*
 执行函数的语句链表
 */
-void exeFuncBagLink(BagLink *head) {
-  BagLink *p = head->next;
+void exeFuncBagLink(BagLink *head, ManagerLink *link) {
+  BagLink *p = head;
+  exeFuncBag(p->bag, link);
+  p = p->next;
+  if (p == NULL)
+    printf("yes\n");
   while (p != head) {
-    exeFuncBag(p->bag);
+    //exeFuncBag(p->bag, link);
     p = p->next;
   }
   return;

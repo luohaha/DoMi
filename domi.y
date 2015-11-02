@@ -159,7 +159,7 @@ function_expression:
     {
       //函数执行操作
       //local_func($1, $3);
-      if (strcmp($1, "print")) {
+      if (strcmp($1, "out") == 0) {
 	$$ = createFunctionCall($1, $3, TRUE);
       } else {
 	//自定义的函数
@@ -171,7 +171,7 @@ function_expression:
     {
       //函数执行操作,无参数
       //local_func($1, $3);
-      if (strcmp($1, "print")) {
+      if (strcmp($1, "out") == 0) {
 	$$ = createFunctionCall($1, NULL, TRUE);
       } else {
 	//自定义的函数

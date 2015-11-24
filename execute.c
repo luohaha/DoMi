@@ -42,6 +42,7 @@ Bag* exeFunc(Function_call *call) {
       args = args->next;
       head = head->next;
     }
+    
     if (args != NULL || head != NULL) {
       fprintf(stderr, "实际参数不正确\n");
       exit(-1);
@@ -56,35 +57,50 @@ Bag* exeFunc(Function_call *call) {
   执行函数语句
 */
 void exeFuncBag(Bag *bag, ManagerLink *p) {
-  printf("%s\n", bag->type);
+  
   if (strcmp(bag->type, "value") == 0) {
     
     if (bag->value->node == NULL) {
+
       VarLink *link = p->manager->varhead;
       while(link != NULL) {
 	if (strcmp(link->value->varname, bag->value->varname) == 0) {
 	  //find
 	  bag->value->node = link->value->node;
+	  bag->node = bag->value->node;
 	  break;
 	} else {
 	  link = link->next;
 	}
-      }//while
+	
+       }//while
+      //printf("sb\n");
       if (link == NULL) {
 	//not found
-	fprintf(stderr, "变量未定义 : %s\n", bag->value->varname);
-	exit(-1);
+	//继续在全局变量中查找
+	exeBag(bag);
+	
+	if (bag->node == NULL) {
+	  fprintf(stderr, "变量未定义 : %s\n", bag->value->varname);
+	  exit(-1);
+	}
+	
       }
       //found
-      bag->node = bag->value->node;
+      
       return;
     }
   } else if (strcmp(bag->type, "assigment_op") == 0) {
     exeFuncTree(bag->assigment_op->send, p);
     bag->assigment_op->recv->node = bag->assigment_op->send->node;
   } else if (strcmp(bag->type, "function_call") == 0) {
-    exeFuncTree(bag->function_call->list->bag, p);
+    ArgumentList *pp = bag->function_call->list;
+    while (pp != NULL) {
+      exeFuncTree(pp->bag, p);
+      pp = pp->next;
+    }
     exeFunc(bag->function_call);
+    
   } else {
      exeBag(bag);
   }
@@ -93,22 +109,37 @@ void exeFuncBag(Bag *bag, ManagerLink *p) {
   执行每一条语句
 */
 void exeBag(Bag *bag) {
+  if (bag == NULL)
+    return;
   if (strcmp(bag->type, "binary_op") == 0) {
     bag->node = simpleComputer(bag->binary_op->left->node, bag->binary_op->right->node, bag->binary_op->type);
   } else if (strcmp(bag->type, "assigment_op") == 0) {
     exeTree(bag->assigment_op->send);
     bag->assigment_op->recv->node = bag->assigment_op->send->node;
   } else if (strcmp(bag->type, "function_call") == 0) {
-    exeTree(bag->function_call->list->bag);
+    ArgumentList *p = bag->function_call->list;
+    while (p != NULL) {
+      exeTree(p->bag);
+      p = p->next;
+    }
+    //exeTree(bag->function_call->list->bag);
     exeFunc(bag->function_call);
   } else if (strcmp(bag->type, "node") == 0) {
 
   } else if (strcmp(bag->type, "value") == 0) {
+    /*
     if (bag->value->node == NULL) {
       fprintf(stderr, "变量未赋值\n");
       exit(1);
+      }*/
+    VarLink *find = findVar(bag->value->varname);
+    if (find == NULL) {
+      fprintf(stderr, "变量不存在\n");
+      exit(-1);
+    } else {
+      bag->node = find->value->node;
+      
     }
-    bag->node = bag->value->node;
   } else if (strcmp(bag->type, "while_statement") == 0) {
     exeWhileStatement(bag);
     
@@ -121,6 +152,8 @@ void exeBag(Bag *bag) {
   执行函数内部的语法树的解析
 */
 void exeFuncTree(Bag *bag, ManagerLink *p) {
+  if (bag == NULL)
+    return;
   /*后续遍历*/
   if (strcmp(bag->type, "binary_op") == 0) {
     exeFuncTree(bag->binary_op->left, p);
@@ -156,15 +189,17 @@ void exeBagLink(BagLink *head) {
 */
 void exeFuncBagLink(BagLink *head, ManagerLink *link) {
   BagLink *p = head;
-  exeFuncBag(p->bag, link);
-  p = p->next;
-  if (p == NULL)
-    printf("yes\n");
-  while (p != head) {
-    //exeFuncBag(p->bag, link);
+  if (p == NULL) {
+    return;
+  } else {
+    exeFuncBag(p->bag, link);
     p = p->next;
+    while (p != NULL && head != p) {
+      exeFuncBag(p->bag, link);
+      p = p->next;
+    }
+    return;
   }
-  return;
 }
 /*
   回收语句链表

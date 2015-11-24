@@ -12,7 +12,8 @@ typedef enum Boolean_e {
 typedef enum ValueType_e {
   STRING_TYPE = 1,
   INTEGER_TYPE = 2,
-  DOUBLE_TYPE = 3
+  DOUBLE_TYPE = 3,
+  NULL_TYPE = 4
 }ValueType;
 
 /*

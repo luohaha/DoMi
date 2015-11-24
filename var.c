@@ -40,10 +40,12 @@ int isTrue(Bag *bag) {
   将语句bag加入对应的链表中
 */
 void bagJoinLink(Bag *bag, BagLink *head) {
-  BagLink *newLink = (BagLink*) malloc(sizeof(BagLink));
-      newLink->bag = bag;
-      newLink->prev = head->prev;
-      newLink->next = head;
-      head->prev->next = newLink;
-      head->prev = newLink;
+  if (bag != NULL) {
+    BagLink *newLink = (BagLink*) malloc(sizeof(BagLink));
+    newLink->bag = bag;
+    newLink->prev = head->prev;
+    newLink->next = head;
+    head->prev->next = newLink;
+    head->prev = newLink;
+  }
 }

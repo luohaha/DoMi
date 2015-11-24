@@ -1,6 +1,6 @@
-int a = 1+7*6-9+4/3;
-int b = 5;
-func asd(int a) {
-     int c = 1     
+int b = 12;
+func asd(int d) {
+     int a = 13;
+     out(a + b + d)
 }
-asd(2);
+asd(14);

@@ -31,7 +31,7 @@ BagLink *insertIntoBlockExpList(BagLink *link, Bag *bag) {
   newLink->next = link;
   
   newLink->next->prev = newLink;
-  link->prev->next = newLink;
+  newLink->prev->next = newLink;
 
   return link;
 }

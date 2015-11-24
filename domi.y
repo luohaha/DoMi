@@ -84,6 +84,7 @@ statement_exp:
       value->varname = $2;
       value->isGivedValue = FALSE;
       value->type = INTEGER_TYPE;
+      $$ = value;
     }
     |
     DOUBLE_M VAL_NAME
@@ -92,6 +93,7 @@ statement_exp:
       value->varname = $2;
       value->isGivedValue = FALSE;
       value->type = DOUBLE_TYPE;
+      $$ = value;
     };
 statement_exp_list:
     statement_exp
@@ -101,17 +103,17 @@ statement_exp_list:
     |
     statement_exp_list COMMA statement_exp
     {
-      insertIntoStatementList($1, $3);
+      $$ = insertIntoStatementList($1, $3);
     };
 block_exp_list:
     eval
     {
-      createBlockExpList($1);
+      $$ = createBlockExpList($1);
     }
     |
     block_exp_list SEMICOLON eval
     {
-      insertIntoBlockExpList($1, $3);
+      $$ = insertIntoBlockExpList($1, $3);
     };
 
 function_defun_exp:
@@ -195,25 +197,36 @@ assign_expression:
     INTEGER_M VAL_NAME ASSIGN expression
     {
       //int变量初始化,并赋值
-      Value *newValue = createVar($2, TRUE, INTEGER_TYPE);
-      VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
-      newLink->value = newValue;
-      newLink->next = manager->varhead->next;
-      manager->varhead->next = newLink;
-
+      VarLink *find = findVar($2);
+      Value *newValue;
+      if (find == NULL) {
+	newValue = createVar($2, TRUE, INTEGER_TYPE);
+	VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
+	newLink->value = newValue;
+	newLink->next = manager->varhead->next;
+	manager->varhead->next = newLink;
+      } else {
+	newValue = find->value;
+	newValue->isGivedValue = TRUE;
+      }
       $$ = createAssigmentOp(newValue, $4);
     }
     |
     DOUBLE_M VAL_NAME ASSIGN expression
     {
       //double变量初始化，并赋值
-      
-      Value *newValue = createVar($2, TRUE, DOUBLE_TYPE);
-      VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
-      newLink->value = newValue;
-      newLink->next = manager->varhead->next;
-      manager->varhead->next = newLink;
-
+      VarLink *find = findVar($2);
+      Value *newValue;
+      if (find == NULL) {
+	newValue = createVar($2, TRUE, DOUBLE_TYPE);
+	VarLink *newLink = (VarLink*)malloc(sizeof(VarLink));
+	newLink->value = newValue;
+	newLink->next = manager->varhead->next;
+	manager->varhead->next = newLink;
+      } else {
+	newValue = find->value;
+	newValue->isGivedValue = TRUE;
+      }
       $$ = createAssigmentOp(newValue, $4);
     }
     |
@@ -230,6 +243,7 @@ assign_expression:
       newLink->value = newValue;
       newLink->next = manager->varhead->next;
       manager->varhead->next = newLink;
+      $$ = NULL;
     }
     |
     DOUBLE_M VAL_NAME
@@ -240,6 +254,7 @@ assign_expression:
       newLink->value = newValue;
       newLink->next = manager->varhead->next;
       manager->varhead->next = newLink;
+      $$ = NULL;
     }
     |
     STRING_M VAL_NAME
@@ -249,18 +264,10 @@ assign_expression:
 argument:
     VAL_NAME
     {
-      Value *value;
-      VarLink *link = (VarLink*)findVar($1);
-      if (link == NULL) {
-	fprintf(stderr, "找不到变量\n");
-        exit(1);
-      } else {
-	value = link->value;
-      }
-      Bag *bag = (Bag*) malloc(sizeof(Bag));
-      bag->type = "value";
-      bag->value = value;
-      $$ = bag;
+	Bag *bag = (Bag*) malloc(sizeof(Bag));
+	bag->type = "value";
+	bag->value = createVar($1, FALSE, NULL_TYPE);
+	$$ = bag;
     }
     ;
 argument_list:
